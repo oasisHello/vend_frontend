@@ -59,16 +59,23 @@
 
     <el-table v-loading="loading" :data="vendorList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
+      <el-table-column label="idx" type="index" width="60" align="center" prop="id" />
       <el-table-column label="name" align="center" prop="name" />
+      <el-table-column label="account" align="center" prop="account" />
+      <el-table-column label="ratio" align="center" prop="ratio">
+        <template #default="scope">
+          {{ scope.row.ratio }}%
+        </template>
+      </el-table-column>
       <el-table-column label="contactor" align="center" prop="contactor" />
       <el-table-column label="phone" align="center" prop="phone" />
-      <el-table-column label="ratio" align="center" prop="ratio" />
-      <el-table-column label="acccount" align="center" prop="account" />
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vendor:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manage:vendor:remove']">删除</el-button>
+          <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vendor:edit']">修改</el-button>
+          <el-button link type="primary" @click="handleDelete(scope.row)" v-hasPermi="['manage:vendor:remove']">删除</el-button>
+          <el-button link type="primary" @click="handleResetPassword(scope.row)" v-hasPermi="['manage:vendor:resetPassword']">ResetPassword</el-button>
+          <el-button link type="primary" @click="handleViewDetails(scope.row)" v-hasPermi="['manage:vendor:query']">ViewDetails</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -82,6 +89,7 @@
     />
 
     <!-- 添加或修改vendor对话框 -->
+     <!--  -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="vendorRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="name" prop="name">
@@ -93,14 +101,18 @@
         <el-form-item label="phone" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入phone" />
         </el-form-item>
+        <el-form-item label="created time" prop="createdTime" v-if="form.id != null">
+            {{ new Date(form.createdTime).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-') }} 
+        </el-form-item>
         <el-form-item label="ratio" prop="ratio">
           <el-input v-model="form.ratio" placeholder="请输入ratio" />
         </el-form-item>
-        <el-form-item label="acccount" prop="account">
+        <el-form-item label="acccount" prop="account" v-if="form.id == null">
           <el-input v-model="form.account" placeholder="请输入acccount" />
         </el-form-item>
-        <el-form-item label="password" prop="password">
-          <el-input v-model="form.password" placeholder="请输入password" />
+        <el-form-item label="password" prop="password" v-if="form.id == null">
+          <!--password invisible-->
+          <el-input v-model="form.password" type="password" placeholder="请输入password" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -110,6 +122,17 @@
         </div>
       </template>
     </el-dialog>
+    
+
+  <!-- Vendor details using el-description -->
+  <el-dialog title="Details" v-model="vendorDetails" width="500px" append-to-body>
+    <el-descriptions :column="2" border>
+      <el-descriptions-item label="Vendor Name">{{ form.name }}</el-descriptions-item>
+      <el-descriptions-item label="Contactor">{{ form.contactor }}</el-descriptions-item>
+      <el-descriptions-item label="Phone">{{ form.phone }}</el-descriptions-item>
+      <el-descriptions-item label="Ratio">{{ form.ratio }}%</el-descriptions-item>
+    </el-descriptions>
+  </el-dialog>
   </div>
 </template>
 
@@ -156,7 +179,8 @@ const data = reactive({
     ],
   }
 });
-
+/** reactive object(data) -> object({ queryParams, form, rules }), where each property(e.g., queryParams) is a ref  */
+/** A ref is a reactive reference to a value. */
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询vendor列表 */
@@ -231,6 +255,16 @@ function handleUpdate(row) {
   });
 }
 
+const vendorDetails = ref(false);
+/** viewDetials按钮操作 */  
+function handleViewDetails(row){
+  reset();
+  const _id  = row.id
+  getVendor(_id).then(response => {
+    form.value = response.data;
+    vendorDetails.value = true;
+  });
+}
 /** 提交按钮 */
 function submitForm() {
   proxy.$refs["vendorRef"].validate(valid => {
