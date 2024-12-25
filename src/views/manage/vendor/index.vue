@@ -62,6 +62,7 @@
       <el-table-column label="idx" type="index" width="60" align="center" prop="id" />
       <el-table-column label="name" align="center" prop="name" />
       <el-table-column label="account" align="center" prop="account" />
+      <el-table-column label="location count" align="center" prop="locationCount" />
       <el-table-column label="ratio" align="center" prop="ratio">
         <template #default="scope">
           {{ scope.row.ratio }}%
