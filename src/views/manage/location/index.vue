@@ -75,7 +75,7 @@
 
     <el-table v-loading="loading" :data="locationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
+      <el-table-column label="index" type="index" width="50" align="center" prop="id" />
       <el-table-column label="name" align="center" prop="name" />
       <el-table-column label="address" align="center" prop="address" />
       <el-table-column label="area_type" align="center" prop="businessArea">
