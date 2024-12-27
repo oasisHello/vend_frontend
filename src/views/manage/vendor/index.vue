@@ -75,7 +75,7 @@
         <template #default="scope">
           <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vendor:edit']">修改</el-button>
           <el-button link type="primary" @click="handleDelete(scope.row)" v-hasPermi="['manage:vendor:remove']">删除</el-button>
-          <el-button link type="primary" @click="handleResetPassword(scope.row)" v-hasPermi="['manage:vendor:resetPassword']">ResetPassword</el-button>
+          <el-button link type="primary" @click="handleResetPassword(scope.row)" v-hasPermi="['manage:vendor:edit']">ResetPassword</el-button>
           <el-button link type="primary" @click="handleViewDetails(scope.row)" v-hasPermi="['manage:vendor:query']">ViewDetails</el-button>
         </template>
       </el-table-column>
@@ -138,7 +138,7 @@
 </template>
 
 <script setup name="Vendor">
-import { listVendor, getVendor, delVendor, addVendor, updateVendor } from "@/api/manage/vendor";
+import { listVendor, getVendor, delVendor, addVendor, updateVendor, resetVendorPwd } from "@/api/manage/vendor";
 
 const { proxy } = getCurrentInstance();
 
@@ -295,6 +295,17 @@ function handleDelete(row) {
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
+  }).catch(() => {});
+}
+
+
+// reset password
+function handleResetPassword(row) {
+  const _id = row.id ; // what does the ids.value do here?
+  proxy.$modal.confirm('是否确认重置密码vendor编号为"' + _id + '"的数据项？').then(function() {
+    return resetVendorPwd(_id);
+  }).then(() => {
+    proxy.$modal.msgSuccess("重置密码成功");
   }).catch(() => {});
 }
 

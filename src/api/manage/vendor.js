@@ -42,3 +42,11 @@ export function delVendor(id) {
     method: 'delete'
   })
 }
+
+// reset vendor password
+export function resetVendorPwd(id) {
+  return request({
+    url: '/manage/vendor/resetPwd/' + id,
+    method: 'put'
+  })
+}
