@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">帝可得后台管理系统</h3>
+      <h3 class="title">Vending Entrance</h3>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -59,7 +59,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2023 ruoyi.vip All Rights Reserved.</span>
+      <span>Copyright@ All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -168,18 +168,23 @@ getCookie();
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background1.png");
+  background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
 }
 .title {
   margin: 0px auto 30px auto;
   text-align: center;
-  color: #707070;
+  color: #264653; /* Deep teal for contrast */
+  font-family: 'Arial', sans-serif; /* Sets the font type */
+  font-size: 2rem;                 /* Sets the font size */
+  font-weight: bold;               /* Makes the font bold */
+  letter-spacing: 1px;             /* Adds spacing between letters */
 }
 
 .login-form {
   border-radius: 6px;
-  background: #ffffff;
+  background: #FFB86C; /* Warm peach to match the image */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
   width: 400px;
   padding: 25px 25px 5px 25px;
   .el-input {
@@ -194,11 +199,13 @@ getCookie();
     margin-left: 0px;
   }
 }
+
 .login-tip {
   font-size: 13px;
   text-align: center;
-  color: #bfbfbf;
+  color: #4A4E69; /* Muted dark olive for a cohesive look */
 }
+
 .login-code {
   width: 33%;
   height: 40px;
@@ -208,6 +215,7 @@ getCookie();
     vertical-align: middle;
   }
 }
+
 .el-login-footer {
   height: 40px;
   line-height: 40px;
@@ -220,6 +228,7 @@ getCookie();
   font-size: 12px;
   letter-spacing: 1px;
 }
+
 .login-code-img {
   height: 40px;
   padding-left: 12px;
