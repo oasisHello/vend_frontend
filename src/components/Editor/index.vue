@@ -90,7 +90,7 @@ const options = ref({
       ["link", "image", "video"]                      // 链接、图片、视频
     ],
   },
-  placeholder: "请输入内容",
+  placeholder: " Please Input 内容",
   readOnly: props.readOnly
 });
 
@@ -182,7 +182,7 @@ function handleUploadError() {
   display: none;
 }
 .ql-snow .ql-tooltip[data-mode="link"]::before {
-  content: "请输入链接地址:";
+  content: " Please Input 链接地址:";
 }
 .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
   border-right: 0px;
@@ -190,7 +190,7 @@ function handleUploadError() {
   padding-right: 0px;
 }
 .ql-snow .ql-tooltip[data-mode="video"]::before {
-  content: "请输入视频地址:";
+  content: " Please Input 视频地址:";
 }
 .ql-snow .ql-picker.ql-size .ql-picker-label::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item::before {

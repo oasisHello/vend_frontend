@@ -84,9 +84,9 @@ const loginForm = ref({
 });
 
 const loginRules = {
-  username: [{ required: true, trigger: "blur", message: "请输入您的账号" }],
-  password: [{ required: true, trigger: "blur", message: "请输入您的密码" }],
-  code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+  username: [{ required: true, trigger: "blur", message: " Please Input 您的账号" }],
+  password: [{ required: true, trigger: "blur", message: " Please Input 您的密码" }],
+  code: [{ required: true, trigger: "change", message: " Please Input 验证码" }]
 };
 
 const codeUrl = ref("");

@@ -4,7 +4,7 @@
       <el-form-item label="Role code" prop="roleCode">
         <el-input
           v-model="queryParams.roleCode"
-          placeholder="请输入Role code"
+          placeholder=" Please Input Role code"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -12,7 +12,7 @@
       <el-form-item label="Role name" prop="roleName">
         <el-input
           v-model="queryParams.roleName"
-          placeholder="请输入Role name"
+          placeholder=" Please Input Role name"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -90,10 +90,10 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="roleRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="Role code" prop="roleCode">
-          <el-input v-model="form.roleCode" placeholder="请输入Role code" />
+          <el-input v-model="form.roleCode" placeholder=" Please Input Role code" />
         </el-form-item>
         <el-form-item label="Role name" prop="roleName">
-          <el-input v-model="form.roleName" placeholder="请输入Role name" />
+          <el-input v-model="form.roleName" placeholder=" Please Input Role name" />
         </el-form-item>
       </el-form>
       <template #footer>

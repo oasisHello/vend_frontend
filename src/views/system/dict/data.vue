@@ -14,7 +14,7 @@
          <el-form-item label="字典标签" prop="dictLabel">
             <el-input
                v-model="queryParams.dictLabel"
-               placeholder="请输入字典标签"
+               placeholder=" Please Input 字典标签"
                clearable
                style="width: 200px"
                @keyup.enter="handleQuery"
@@ -131,13 +131,13 @@
                <el-input v-model="form.dictType" :disabled="true" />
             </el-form-item>
             <el-form-item label="数据标签" prop="dictLabel">
-               <el-input v-model="form.dictLabel" placeholder="请输入数据标签" />
+               <el-input v-model="form.dictLabel" placeholder=" Please Input 数据标签" />
             </el-form-item>
             <el-form-item label="数据键值" prop="dictValue">
-               <el-input v-model="form.dictValue" placeholder="请输入数据键值" />
+               <el-input v-model="form.dictValue" placeholder=" Please Input 数据键值" />
             </el-form-item>
             <el-form-item label="样式属性" prop="cssClass">
-               <el-input v-model="form.cssClass" placeholder="请输入样式属性" />
+               <el-input v-model="form.cssClass" placeholder=" Please Input 样式属性" />
             </el-form-item>
             <el-form-item label="显示排序" prop="dictSort">
                <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
@@ -162,7 +162,7 @@
                </el-radio-group>
             </el-form-item>
             <el-form-item label="备注" prop="remark">
-               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+               <el-input v-model="form.remark" type="textarea" placeholder=" Please Input 内容"></el-input>
             </el-form-item>
          </el-form>
          <template #footer>

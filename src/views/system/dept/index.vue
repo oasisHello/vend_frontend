@@ -4,7 +4,7 @@
          <el-form-item label="部门名称" prop="deptName">
             <el-input
                v-model="queryParams.deptName"
-               placeholder="请输入部门名称"
+               placeholder=" Please Input 部门名称"
                clearable
                style="width: 200px"
                @keyup.enter="handleQuery"
@@ -94,7 +94,7 @@
                </el-col>
                <el-col :span="12">
                   <el-form-item label="部门名称" prop="deptName">
-                     <el-input v-model="form.deptName" placeholder="请输入部门名称" />
+                     <el-input v-model="form.deptName" placeholder=" Please Input 部门名称" />
                   </el-form-item>
                </el-col>
                <el-col :span="12">
@@ -104,17 +104,17 @@
                </el-col>
                <el-col :span="12">
                   <el-form-item label="负责人" prop="leader">
-                     <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />
+                     <el-input v-model="form.leader" placeholder=" Please Input 负责人" maxlength="20" />
                   </el-form-item>
                </el-col>
                <el-col :span="12">
                   <el-form-item label="联系电话" prop="phone">
-                     <el-input v-model="form.phone" placeholder="请输入联系电话" maxlength="11" />
+                     <el-input v-model="form.phone" placeholder=" Please Input 联系电话" maxlength="11" />
                   </el-form-item>
                </el-col>
                <el-col :span="12">
                   <el-form-item label="邮箱" prop="email">
-                     <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
+                     <el-input v-model="form.email" placeholder=" Please Input 邮箱" maxlength="50" />
                   </el-form-item>
                </el-col>
                <el-col :span="12">
@@ -165,8 +165,8 @@ const data = reactive({
     parentId: [{ required: true, message: "上级部门不能为空", trigger: "blur" }],
     deptName: [{ required: true, message: "部门名称不能为空", trigger: "blur" }],
     orderNum: [{ required: true, message: "显示排序不能为空", trigger: "blur" }],
-    email: [{ type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }],
-    phone: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur" }]
+    email: [{ type: "email", message: " Please Input 正确的邮箱地址", trigger: ["blur", "change"] }],
+    phone: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: " Please Input 正确的手机号码", trigger: "blur" }]
   },
 });
 

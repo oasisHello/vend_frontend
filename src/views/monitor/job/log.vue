@@ -4,7 +4,7 @@
          <el-form-item label="任务名称" prop="jobName">
             <el-input
                v-model="queryParams.jobName"
-               placeholder="请输入任务名称"
+               placeholder=" Please Input 任务名称"
                clearable
                style="width: 240px"
                @keyup.enter="handleQuery"

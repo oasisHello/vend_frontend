@@ -4,7 +4,7 @@
          <el-form-item label="操作地址" prop="operIp">
             <el-input
                v-model="queryParams.operIp"
-               placeholder="请输入操作地址"
+               placeholder=" Please Input 操作地址"
                clearable
                style="width: 240px;"
                @keyup.enter="handleQuery"
@@ -13,7 +13,7 @@
          <el-form-item label="系统模块" prop="title">
             <el-input
                v-model="queryParams.title"
-               placeholder="请输入系统模块"
+               placeholder=" Please Input 系统模块"
                clearable
                style="width: 240px;"
                @keyup.enter="handleQuery"
@@ -22,7 +22,7 @@
          <el-form-item label="操作人员" prop="operName">
             <el-input
                v-model="queryParams.operName"
-               placeholder="请输入操作人员"
+               placeholder=" Please Input 操作人员"
                clearable
                style="width: 240px;"
                @keyup.enter="handleQuery"
