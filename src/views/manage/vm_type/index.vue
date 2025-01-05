@@ -4,19 +4,12 @@
       <el-form-item label="Name" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入Name"
+          placeholder="Please Input Name"
           clearable
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="Model" prop="model">
-        <el-input
-          v-model="queryParams.model"
-          placeholder="请输入Model"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
+
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -67,7 +60,6 @@
 
     <el-table v-loading="loading" :data="vm_typeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="id" />
       <el-table-column label="Name" align="center" prop="name" />
       <el-table-column label="Model" align="center" prop="model" />
       <el-table-column label="Image" align="center" prop="image" width="100">
@@ -80,8 +72,8 @@
       <el-table-column label="Max Capacity" align="center" prop="aisleMaxCapacity" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vm_type:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['manage:vm_type:remove']">删除</el-button>
+          <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vm_type:edit']">修改</el-button>
+          <el-button link type="primary" @click="handleDelete(scope.row)" v-hasPermi="['manage:vm_type:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -98,22 +90,20 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="vm_typeRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="Name" prop="name">
-          <el-input v-model="form.name" placeholder="请输入Name" />
+          <el-input v-model="form.name" placeholder="Please Input Name" />
         </el-form-item>
-        <el-form-item label="Model" prop="model">
-          <el-input v-model="form.model" placeholder="请输入Model" />
+        <el-form-item label="Code" prop="model">
+          <el-input v-model="form.model" placeholder="Please Input Code" />
+        </el-form-item>
+        <el-form-item label="Aisle Number">
+          <el-input-number v-model="form.vmRow" :min="1" :max="10" placeholder="Please Input Rows" /> rows &nbsp &nbsp
+          <el-input-number v-model="form.vmCol" :min="1" :max="10" placeholder="Please Input Cols" /> columns
+        </el-form-item>
+        <el-form-item label="Max Capacity" prop="aisleMaxCapacity">
+          <el-input-number v-model="form.aisleMaxCapacity" :min="1" placeholder="Please Input Max Capacity" />
         </el-form-item>
         <el-form-item label="Image" prop="image">
           <image-upload v-model="form.image"/>
-        </el-form-item>
-        <el-form-item label="Rows" prop="vmRow">
-          <el-input v-model="form.vmRow" placeholder="请输入Rows" />
-        </el-form-item>
-        <el-form-item label="Columns" prop="vmCol">
-          <el-input v-model="form.vmCol" placeholder="请输入Columns" />
-        </el-form-item>
-        <el-form-item label="Max Capacity" prop="aisleMaxCapacity">
-          <el-input v-model="form.aisleMaxCapacity" placeholder="请输入Max Capacity" />
         </el-form-item>
       </el-form>
       <template #footer>
