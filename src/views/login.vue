@@ -183,7 +183,7 @@ getCookie();
 
 .login-form {
   border-radius: 6px;
-  background: #FFB86C; /* Warm peach to match the image */
+  background: #FFB86C ; /* Warm peach to match the image */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
   width: 400px;
   padding: 25px 25px 5px 25px;
