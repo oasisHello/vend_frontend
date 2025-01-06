@@ -6,7 +6,7 @@
             <div class="head-container">
                <el-input
                   v-model="deptName"
-                  placeholder="请输入部门名称"
+                  placeholder=" Please Input 部门名称"
                   clearable
                   prefix-icon="Search"
                   style="margin-bottom: 20px"
@@ -32,7 +32,7 @@
                <el-form-item label="用户名称" prop="userName">
                   <el-input
                      v-model="queryParams.userName"
-                     placeholder="请输入用户名称"
+                     placeholder=" Please Input 用户名称"
                      clearable
                      style="width: 240px"
                      @keyup.enter="handleQuery"
@@ -41,7 +41,7 @@
                <el-form-item label="手机号码" prop="phonenumber">
                   <el-input
                      v-model="queryParams.phonenumber"
-                     placeholder="请输入手机号码"
+                     placeholder=" Please Input 手机号码"
                      clearable
                      style="width: 240px"
                      @keyup.enter="handleQuery"
@@ -184,7 +184,7 @@
             <el-row>
                <el-col :span="12">
                   <el-form-item label="用户昵称" prop="nickName">
-                     <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30" />
+                     <el-input v-model="form.nickName" placeholder=" Please Input 用户昵称" maxlength="30" />
                   </el-form-item>
                </el-col>
                <el-col :span="12">
@@ -203,24 +203,24 @@
             <el-row>
                <el-col :span="12">
                   <el-form-item label="手机号码" prop="phonenumber">
-                     <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11" />
+                     <el-input v-model="form.phonenumber" placeholder=" Please Input 手机号码" maxlength="11" />
                   </el-form-item>
                </el-col>
                <el-col :span="12">
                   <el-form-item label="邮箱" prop="email">
-                     <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
+                     <el-input v-model="form.email" placeholder=" Please Input 邮箱" maxlength="50" />
                   </el-form-item>
                </el-col>
             </el-row>
             <el-row>
                <el-col :span="12">
                   <el-form-item v-if="form.userId == undefined" label="用户名称" prop="userName">
-                     <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
+                     <el-input v-model="form.userName" placeholder=" Please Input 用户名称" maxlength="30" />
                   </el-form-item>
                </el-col>
                <el-col :span="12">
                   <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
-                     <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password />
+                     <el-input v-model="form.password" placeholder=" Please Input 用户密码" type="password" maxlength="20" show-password />
                   </el-form-item>
                </el-col>
             </el-row>
@@ -280,7 +280,7 @@
             <el-row>
                <el-col :span="24">
                   <el-form-item label="备注">
-                     <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+                     <el-input v-model="form.remark" type="textarea" placeholder=" Please Input 内容"></el-input>
                   </el-form-item>
                </el-col>
             </el-row>
@@ -392,8 +392,8 @@ const data = reactive({
     userName: [{ required: true, message: "用户名称不能为空", trigger: "blur" }, { min: 2, max: 20, message: "用户名称长度必须介于 2 和 20 之间", trigger: "blur" }],
     nickName: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
     password: [{ required: true, message: "用户密码不能为空", trigger: "blur" }, { min: 5, max: 20, message: "用户密码长度必须介于 5 和 20 之间", trigger: "blur" }],
-    email: [{ type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }],
-    phonenumber: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur" }]
+    email: [{ type: "email", message: " Please Input 正确的邮箱地址", trigger: ["blur", "change"] }],
+    phonenumber: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: " Please Input 正确的手机号码", trigger: "blur" }]
   }
 });
 

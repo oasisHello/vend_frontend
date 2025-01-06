@@ -4,7 +4,7 @@
       <el-form-item label="Code" prop="innerCode">
         <el-input
           v-model="queryParams.innerCode"
-          placeholder="请输入Code"
+          placeholder=" Please Input Code"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -12,7 +12,7 @@
       <el-form-item label="Node" prop="nodeId">
         <el-input
           v-model="queryParams.nodeId"
-          placeholder="请输入Node"
+          placeholder=" Please Input Node"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -20,7 +20,7 @@
       <el-form-item label="Region ID" prop="regionId">
         <el-input
           v-model="queryParams.regionId"
-          placeholder="请输入Region ID"
+          placeholder=" Please Input Region ID"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -28,7 +28,7 @@
       <el-form-item label="Partner ID" prop="partnerId">
         <el-input
           v-model="queryParams.partnerId"
-          placeholder="请输入Partner ID"
+          placeholder=" Please Input Partner ID"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -36,7 +36,7 @@
       <el-form-item label="Type ID" prop="vmTypeId">
         <el-input
           v-model="queryParams.vmTypeId"
-          placeholder="请输入Type ID"
+          placeholder=" Please Input Type ID"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -54,7 +54,7 @@
       <el-form-item label="Policy ID" prop="policyId">
         <el-input
           v-model="queryParams.policyId"
-          placeholder="请输入Policy ID"
+          placeholder=" Please Input Policy ID"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -139,13 +139,13 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="vmRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="Code" prop="innerCode">
-          <el-input v-model="form.innerCode" placeholder="请输入Code" />
+          <el-input v-model="form.innerCode" placeholder=" Please Input Code" />
         </el-form-item>
         <el-form-item label="Node" prop="nodeId">
-          <el-input v-model="form.nodeId" placeholder="请输入Node" />
+          <el-input v-model="form.nodeId" placeholder=" Please Input Node" />
         </el-form-item>
         <el-form-item label="Type ID" prop="vmTypeId">
-          <el-input v-model="form.vmTypeId" placeholder="请输入Type ID" />
+          <el-input v-model="form.vmTypeId" placeholder=" Please Input Type ID" />
         </el-form-item>
       </el-form>
       <template #footer>

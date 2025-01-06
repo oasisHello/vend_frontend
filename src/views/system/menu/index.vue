@@ -4,7 +4,7 @@
          <el-form-item label="菜单名称" prop="menuName">
             <el-input
                v-model="queryParams.menuName"
-               placeholder="请输入菜单名称"
+               placeholder=" Please Input 菜单名称"
                clearable
                style="width: 200px"
                @keyup.enter="handleQuery"
@@ -134,7 +134,7 @@
                </el-col>
                <el-col :span="12">
                   <el-form-item label="菜单名称" prop="menuName">
-                     <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
+                     <el-input v-model="form.menuName" placeholder=" Please Input 菜单名称" />
                   </el-form-item>
                </el-col>
                <el-col :span="12">
@@ -167,7 +167,7 @@
                            路由地址
                         </span>
                      </template>
-                     <el-input v-model="form.path" placeholder="请输入路由地址" />
+                     <el-input v-model="form.path" placeholder=" Please Input 路由地址" />
                   </el-form-item>
                </el-col>
                <el-col :span="12" v-if="form.menuType == 'C'">
@@ -180,12 +180,12 @@
                            组件路径
                         </span>
                      </template>
-                     <el-input v-model="form.component" placeholder="请输入组件路径" />
+                     <el-input v-model="form.component" placeholder=" Please Input 组件路径" />
                   </el-form-item>
                </el-col>
                <el-col :span="12" v-if="form.menuType != 'M'">
                   <el-form-item>
-                     <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100" />
+                     <el-input v-model="form.perms" placeholder=" Please Input 权限标识" maxlength="100" />
                      <template #label>
                         <span>
                            <el-tooltip content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)" placement="top">
@@ -198,7 +198,7 @@
                </el-col>
                <el-col :span="12" v-if="form.menuType == 'C'">
                   <el-form-item>
-                     <el-input v-model="form.query" placeholder="请输入路由参数" maxlength="255" />
+                     <el-input v-model="form.query" placeholder=" Please Input 路由参数" maxlength="255" />
                      <template #label>
                         <span>
                            <el-tooltip content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`' placement="top">

@@ -4,7 +4,7 @@
       <el-form-item label="Employee name" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入Employee name"
+          placeholder=" Please Input Employee name"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -84,10 +84,10 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="empRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="Employee name" prop="userName">
-          <el-input v-model="form.userName" placeholder="请输入Employee name" />
+          <el-input v-model="form.userName" placeholder=" Please Input Employee name" />
         </el-form-item>
         <el-form-item label="Associated role ID" prop="roleId">
-          <!-- <el-input v-model="form.roleId" placeholder="请输入Associated role ID" /> -->
+          <!-- <el-input v-model="form.roleId" placeholder=" Please Input Associated role ID" /> -->
            <el-select v-model="form.roleId" placeholder="请选择Associated role ID">
             <el-option
               v-for="item in roleList"
@@ -98,10 +98,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Mobile phone number" prop="mobile">
-          <el-input v-model="form.mobile" placeholder="请输入Mobile phone number" />
+          <el-input v-model="form.mobile" placeholder=" Please Input Mobile phone number" />
         </el-form-item>
         <el-form-item label="Associated region ID" prop="regionId">
-          <el-input v-model="form.regionId" placeholder="请输入Associated region ID" />
+          <el-input v-model="form.regionId" placeholder=" Please Input Associated region ID" />
         </el-form-item>
         <el-form-item lable= "modify time" prop="updateTime" v-if="form.id!=null">
           {{form.updateTime}}

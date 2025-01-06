@@ -5,12 +5,12 @@
       <el-form ref="treeNodeForm" :model="formData" :rules="rules" label-width="100px">
         <el-col :span="24">
           <el-form-item label="选项名" prop="label">
-            <el-input v-model="formData.label" placeholder="请输入选项名" clearable />
+            <el-input v-model="formData.label" placeholder=" Please Input 选项名" clearable />
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="选项值" prop="value">
-            <el-input v-model="formData.value" placeholder="请输入选项值" clearable>
+            <el-input v-model="formData.value" placeholder=" Please Input 选项值" clearable>
               <template #append>
                 <el-select v-model="dataType" :style="{ width: '100px' }">
                   <el-option v-for="(item, index) in dataTypeOptions" :key="index" :label="item.label" :value="item.value"

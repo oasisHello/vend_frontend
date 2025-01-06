@@ -5,7 +5,7 @@
          <el-form-item label="用户名称" prop="userName">
             <el-input
                v-model="queryParams.userName"
-               placeholder="请输入用户名称"
+               placeholder=" Please Input 用户名称"
                clearable
                style="width: 200px"
                @keyup.enter="handleQuery"
@@ -14,7 +14,7 @@
          <el-form-item label="手机号码" prop="phonenumber">
             <el-input
                v-model="queryParams.phonenumber"
-               placeholder="请输入手机号码"
+               placeholder=" Please Input 手机号码"
                clearable
                style="width: 200px"
                @keyup.enter="handleQuery"
