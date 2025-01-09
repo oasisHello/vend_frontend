@@ -1,79 +1,35 @@
 <template>
   <div class="app-container">
-    <el-form
-      :model="queryParams"
-      ref="queryRef"
-      :inline="true"
-      v-show="showSearch"
-      label-width="68px"
-    >
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="Inner Code" prop="innerCode">
-        <el-input
-          v-model="queryParams.innerCode"
-          placeholder="请输入Inner Code"
-          clearable
-          @keyup.enter="handleQuery"
-        />
+        <el-input v-model="queryParams.innerCode" placeholder="请输入Inner Code" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery"
-          >搜索</el-button
-        >
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['manage:vm:add']"
-        >新增</el-button>
+        <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['manage:vm:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manage:vm:edit']"
-        >修改</el-button>
+        <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate"
+          v-hasPermi="['manage:vm:edit']">修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['manage:vm:remove']"
-        >删除</el-button>
+        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['manage:vm:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['manage:vm:export']"
-          >导出</el-button
-        >
+        <el-button type="warning" plain icon="Download" @click="handleExport"
+          v-hasPermi="['manage:vm:export']">导出</el-button>
       </el-col>
-      <right-toolbar
-        v-model:showSearch="showSearch"
-        @queryTable="getList"
-      ></right-toolbar>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table
-      v-loading="loading"
-      :data="vmList"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table v-loading="loading" :data="vmList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="Inner Code" align="center" prop="innerCode" />
       <el-table-column label="Type " align="center" prop="vmTypeId">
@@ -85,7 +41,7 @@
       </el-table-column>
 
       <el-table-column label="Address" align="center" prop="address" />
-      <el-table-column label="Vendor ID" align="center" prop="vendorId">
+      <el-table-column label="Vendor" align="center" prop="vendorId">
         <template #default="scope">
           <div v-for="item in vendorList" :key="item.id">
             <span v-if="item.id == scope.row.vendorId">{{ item.name }} </span>
@@ -93,35 +49,21 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Machine Status" align="center" prop="vmStatus">
+      <el-table-column label="Status" align="center" prop="vmStatus">
         <template #default="scope">
           <dict-tag :options="vm_status" :value="scope.row.vmStatus" />
         </template>
       </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-      >
+
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['manage:vm:edit']"
-            >修改</el-button
-          >
+          <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vm:edit']">修改</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize" @pagination="getList" />
 
     <!-- 添加或修改Vending Machine Manage对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
@@ -154,18 +96,9 @@
           </div>
         </el-form-item>
 
-        <el-form-item
-          label="Type"
-          prop="vmTypeId"
-          v-if="form.innerCode == null"
-        >
-          <el-select v-model="form.vmTypeId" placeholder="Select Type">
-            <el-option
-              v-for="item in vmTypeList"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
+        <el-form-item label="Type" prop="vmTypeId" v-if="form.innerCode == null">
+          <el-select v-model="form.vmTypeId" placeholder="Select">
+            <el-option v-for="item in vmTypeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
 
@@ -173,18 +106,9 @@
           <span>{{ form.aisleMaxCapacity }}</span>
         </el-form-item>
 
-        <el-form-item
-          label="Location"
-          prop="locationId"
-          v-if="form.innerCode == null"
-        >
-          <el-select v-model="form.locationId" placeholder="Select Location">
-            <el-option
-              v-for="item in locationList"
-              :key="item.id"
-              :label="item.address"
-              :value="item.id"
-            ></el-option>
+        <el-form-item label="Location" prop="locationId" >
+          <el-select v-model="form.locationId" placeholder="Location">
+            <el-option v-for="item in locationList" :key="item.id" :label="item.address" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
 
@@ -194,13 +118,17 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="region">
+        <el-form-item label="region" v-if="form.innerCode != null">
           <div v-for="item in regionList" :key="item.id">
             <span v-if="item.id == form.regionId">{{ item.name }} </span>
           </div>
         </el-form-item>
 
-        <el-form-item label="address" prop="address" />
+        <el-form-item label="address" v-if="form.innerCode != null">
+          <div v-for="item in locationList" :key="item.id">
+            <span v-if="item.id == form.locationId">{{ item.address }} </span>
+          </div>
+        </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -218,10 +146,10 @@ import { listVmType } from "@/api/manage/vmType";
 import { listVendor } from "@/api/manage/vendor";
 import { listLocation } from "@/api/manage/location";
 import { loadAllParams } from "@/api/page";
-import {listRegion} from "@/api/manage/region";
+import { listRegion } from "@/api/manage/region";
 
 const { proxy } = getCurrentInstance();
-const { vm_status } = proxy.useDict("vm_status");
+const { vm_status } = proxy.useDict("vm_status"); // Note :  the values stored in the dictionary are strings, not numbers.
 
 const vmList = ref([]);
 const open = ref(false);
@@ -370,7 +298,7 @@ function handleDelete(row) {
       getList();
       proxy.$modal.msgSuccess("删除成功");
     })
-    .catch(() => {});
+    .catch(() => { });
 }
 
 /** 导出按钮操作 */
@@ -412,7 +340,7 @@ function getRegionList() {
   listRegion(loadAllParams).then((response) => {
     regionList.value = response.rows;
   });
-} 
+}
 
 // Preload data(Cache)
 getRegionList();
