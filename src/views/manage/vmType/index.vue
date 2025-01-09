@@ -4,12 +4,11 @@
       <el-form-item label="Name" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="Please Input Name"
+          placeholder="请输入Type Name"
           clearable
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -23,7 +22,7 @@
           plain
           icon="Plus"
           @click="handleAdd"
-          v-hasPermi="['manage:vm_type:add']"
+          v-hasPermi="['manage:vmType:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -33,7 +32,7 @@
           icon="Edit"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['manage:vm_type:edit']"
+          v-hasPermi="['manage:vmType:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -43,7 +42,7 @@
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['manage:vm_type:remove']"
+          v-hasPermi="['manage:vmType:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -52,28 +51,28 @@
           plain
           icon="Download"
           @click="handleExport"
-          v-hasPermi="['manage:vm_type:export']"
+          v-hasPermi="['manage:vmType:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="vm_typeList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="vmTypeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="Name" align="center" prop="name" />
-      <el-table-column label="Model" align="center" prop="model" />
+      <el-table-column label="Code" align="center" prop="code" />
       <el-table-column label="Image" align="center" prop="image" width="100">
         <template #default="scope">
           <image-preview :src="scope.row.image" :width="50" :height="50"/>
         </template>
       </el-table-column>
-      <el-table-column label="Rows" align="center" prop="vmRow" />
-      <el-table-column label="Columns" align="center" prop="vmCol" />
-      <el-table-column label="Max Capacity" align="center" prop="aisleMaxCapacity" />
+      <el-table-column label="Rows" align="center" prop="rowCount" />
+      <el-table-column label="Columns" align="center" prop="colCount" />
+      <el-table-column label="Capacity per Aisle" align="center" prop="aisleMaxCapacity" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vm_type:edit']">修改</el-button>
-          <el-button link type="primary" @click="handleDelete(scope.row)" v-hasPermi="['manage:vm_type:remove']">删除</el-button>
+          <el-button link type="primary"  @click="handleUpdate(scope.row)" v-hasPermi="['manage:vmType:edit']">修改</el-button>
+          <el-button link type="primary"  @click="handleDelete(scope.row)" v-hasPermi="['manage:vmType:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -86,21 +85,21 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改Vending Machine Types对话框 -->
+    <!-- 添加或修改Machine Types对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="vm_typeRef" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="vmTypeRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="Name" prop="name">
-          <el-input v-model="form.name" placeholder="Please Input Name" />
+          <el-input v-model="form.name" placeholder="请输入Type Name" />
         </el-form-item>
-        <el-form-item label="Code" prop="model">
-          <el-input v-model="form.model" placeholder="Please Input Code" />
+        <el-form-item label="Code" prop="code">
+          <el-input v-model="form.code" placeholder="请输入Code" />
         </el-form-item>
-        <el-form-item label="Aisle Number">
-          <el-input-number v-model="form.vmRow" :min="1" :max="10" placeholder="Please Input Rows" /> rows &nbsp &nbsp
-          <el-input-number v-model="form.vmCol" :min="1" :max="10" placeholder="Please Input Cols" /> columns
+        <el-form-item label="Aisle Num" prop="rowCount">
+          <el-input-number v-model="form.rowCount" :min="1" :max="10" placeholder="请输入Number of Rows" /> Row &nbsp;&nbsp;
+          <el-input-number v-model="form.colCount" :min="1" :max="10" placeholder="请输入Number of Columns" /> Col
         </el-form-item>
-        <el-form-item label="Max Capacity" prop="aisleMaxCapacity">
-          <el-input-number v-model="form.aisleMaxCapacity" :min="1" placeholder="Please Input Max Capacity" />
+        <el-form-item label="Capacity" prop="aisleMaxCapacity">
+          <el-input-number v-model="form.aisleMaxCapacity" :min="1" :max="100"  />
         </el-form-item>
         <el-form-item label="Image" prop="image">
           <image-upload v-model="form.image"/>
@@ -116,12 +115,12 @@
   </div>
 </template>
 
-<script setup name="Vm_type">
-import { listVm_type, getVm_type, delVm_type, addVm_type, updateVm_type } from "@/api/manage/vm_type";
+<script setup name="VmType">
+import { listVmType, getVmType, delVmType, addVmType, updateVmType } from "@/api/manage/vmType";
 
 const { proxy } = getCurrentInstance();
 
-const vm_typeList = ref([]);
+const vmTypeList = ref([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -137,37 +136,37 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     name: null,
-    model: null,
+    code: null,
   },
   rules: {
     name: [
-      { required: true, message: "Name不能为空", trigger: "blur" }
+      { required: true, message: "Type Name不能为空", trigger: "blur" }
     ],
-    model: [
-      { required: true, message: "Model不能为空", trigger: "blur" }
+    code: [
+      { required: true, message: "Code不能为空", trigger: "blur" }
     ],
     image: [
-      { required: true, message: "Image不能为空", trigger: "blur" }
+      { required: true, message: "Image URL不能为空", trigger: "blur" }
     ],
-    vmRow: [
-      { required: true, message: "Rows不能为空", trigger: "blur" }
+    rowCount: [
+      { required: true, message: "Number of Rows不能为空", trigger: "blur" }
     ],
-    vmCol: [
-      { required: true, message: "Columns不能为空", trigger: "blur" }
+    colCount: [
+      { required: true, message: "Number of Columns不能为空", trigger: "blur" }
     ],
     aisleMaxCapacity: [
-      { required: true, message: "Max Capacity不能为空", trigger: "blur" }
+      { required: true, message: "Maximum Capacity per Aisle不能为空", trigger: "blur" }
     ]
   }
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
-/** 查询Vending Machine Types列表 */
+/** 查询Machine Types列表 */
 function getList() {
   loading.value = true;
-  listVm_type(queryParams.value).then(response => {
-    vm_typeList.value = response.rows;
+  listVmType(queryParams.value).then(response => {
+    vmTypeList.value = response.rows;
     total.value = response.total;
     loading.value = false;
   });
@@ -184,13 +183,13 @@ function reset() {
   form.value = {
     id: null,
     name: null,
-    model: null,
+    code: null,
     image: null,
-    vmRow: null,
-    vmCol: null,
+    rowCount: null,
+    colCount: null,
     aisleMaxCapacity: null
   };
-  proxy.resetForm("vm_typeRef");
+  proxy.resetForm("vmTypeRef");
 }
 
 /** 搜索按钮操作 */
@@ -216,32 +215,32 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset();
   open.value = true;
-  title.value = "添加Vending Machine Types";
+  title.value = "Add Machine Types";
 }
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
   const _id = row.id || ids.value
-  getVm_type(_id).then(response => {
+  getVmType(_id).then(response => {
     form.value = response.data;
     open.value = true;
-    title.value = "修改Vending Machine Types";
+    title.value = "Modify Machine Types";
   });
 }
 
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["vm_typeRef"].validate(valid => {
+  proxy.$refs["vmTypeRef"].validate(valid => {
     if (valid) {
       if (form.value.id != null) {
-        updateVm_type(form.value).then(response => {
+        updateVmType(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addVm_type(form.value).then(response => {
+        addVmType(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
@@ -254,8 +253,8 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除Vending Machine Types编号为"' + _ids + '"的数据项？').then(function() {
-    return delVm_type(_ids);
+  proxy.$modal.confirm('是否确认删除Machine Types编号为"' + _ids + '"的数据项？').then(function() {
+    return delVmType(_ids);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
@@ -264,9 +263,9 @@ function handleDelete(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('manage/vm_type/export', {
+  proxy.download('manage/vmType/export', {
     ...queryParams.value
-  }, `vm_type_${new Date().getTime()}.xlsx`)
+  }, `vmType_${new Date().getTime()}.xlsx`)
 }
 
 getList();

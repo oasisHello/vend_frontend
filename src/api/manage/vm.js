@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询Vending Machine Information列表
+// 查询Vending Machine Manage列表
 export function listVm(query) {
   return request({
     url: '/manage/vm/list',
@@ -9,7 +9,7 @@ export function listVm(query) {
   })
 }
 
-// 查询Vending Machine Information详细
+// 查询Vending Machine Manage详细
 export function getVm(id) {
   return request({
     url: '/manage/vm/' + id,
@@ -17,7 +17,7 @@ export function getVm(id) {
   })
 }
 
-// 新增Vending Machine Information
+// 新增Vending Machine Manage
 export function addVm(data) {
   return request({
     url: '/manage/vm',
@@ -26,7 +26,7 @@ export function addVm(data) {
   })
 }
 
-// 修改Vending Machine Information
+// 修改Vending Machine Manage
 export function updateVm(data) {
   return request({
     url: '/manage/vm',
@@ -35,7 +35,7 @@ export function updateVm(data) {
   })
 }
 
-// 删除Vending Machine Information
+// 删除Vending Machine Manage
 export function delVm(id) {
   return request({
     url: '/manage/vm/' + id,
