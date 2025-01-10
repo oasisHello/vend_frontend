@@ -45,20 +45,8 @@
           <dict-tag :options="business_type" :value="scope.row.businessArea" />
         </template>
       </el-table-column>
-      <el-table-column label="region">
-        <template #default="scope">
-          <div v-for="item in regionList" :key="item.id">
-            <span v-if="item.id == scope.row.regionId">{{ item.name }} </span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="vendor">
-        <template #default="scope">
-          <div v-for="item in vendorList" :key="item.id">
-            <span v-if="item.id == scope.row.vendorId">{{ item.name }} </span>
-          </div>
-        </template>
-      </el-table-column>
+      <el-table-column label="region" prop="region.name" />
+      <el-table-column label="vendor" prop="vendor.name"/>
       <el-table-column label="address" align="left" prop="address" show-overflow-tooltip="true"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
