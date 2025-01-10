@@ -15,16 +15,16 @@
         <el-form-item>
             <el-radio :label="3" v-model='radioValue'>
                 周期从
-                <el-input-number v-model='cycle01' :min='fullYear' :max="2098"/> -
-                <el-input-number v-model='cycle02' :min="cycle01 ? cycle01 + 1 : fullYear + 1" :max="2099"/>
+                <el-input-number v-model='cycle01' :min='fullYear' :max="2098" /> -
+                <el-input-number v-model='cycle02' :min="cycle01 ? cycle01 + 1 : fullYear + 1" :max="2099" />
             </el-radio>
         </el-form-item>
 
         <el-form-item>
             <el-radio :label="4" v-model='radioValue'>
                 从
-                <el-input-number v-model='average01' :min='fullYear' :max="2098"/> 年开始，每
-                <el-input-number v-model='average02' :min="1" :max="2099 - average01 || fullYear"/> 年执行一次
+                <el-input-number v-model='average01' :min='fullYear' :max="2098" /> 年开始，每
+                <el-input-number v-model='average02' :min="1" :max="2099 - average01 || fullYear" /> 年执行一次
             </el-radio>
 
         </el-form-item>
@@ -33,7 +33,7 @@
             <el-radio :label="5" v-model='radioValue'>
                 指定
                 <el-select clearable v-model="checkboxList" placeholder="可多选" multiple :multiple-limit="8">
-                    <el-option v-for="item in 9" :key="item" :value="item - 1 + fullYear" :label="item -1 + fullYear" />
+                    <el-option v-for="item in 9" :key="item" :value="item - 1 + fullYear" :label="item - 1 + fullYear" />
                 </el-select>
             </el-radio>
         </el-form-item>
@@ -140,10 +140,14 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.el-input-number--small, .el-select, .el-select--small {
+.el-input-number--small,
+.el-select,
+.el-select--small {
     margin: 0 0.2rem;
 }
-.el-select, .el-select--small {
+
+.el-select,
+.el-select--small {
     width: 18.8rem;
 }
 </style>

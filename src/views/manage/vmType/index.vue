@@ -2,12 +2,7 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="Name" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入Type Name"
-          clearable
-          @keyup.enter="handleQuery"
-        />
+        <el-input v-model="queryParams.name" placeholder="请输入Type Name" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -17,42 +12,19 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['manage:vmType:add']"
-        >新增</el-button>
+        <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['manage:vmType:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manage:vmType:edit']"
-        >修改</el-button>
+        <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate"
+          v-hasPermi="['manage:vmType:edit']">修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['manage:vmType:remove']"
-        >删除</el-button>
+        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['manage:vmType:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['manage:vmType:export']"
-        >导出</el-button>
+        <el-button type="warning" plain icon="Download" @click="handleExport"
+          v-hasPermi="['manage:vmType:export']">导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -63,7 +35,7 @@
       <el-table-column label="Code" align="center" prop="code" />
       <el-table-column label="Image" align="center" prop="image" width="100">
         <template #default="scope">
-          <image-preview :src="scope.row.image" :width="50" :height="50"/>
+          <image-preview :src="scope.row.image" :width="50" :height="50" />
         </template>
       </el-table-column>
       <el-table-column label="Rows" align="center" prop="rowCount" />
@@ -71,19 +43,16 @@
       <el-table-column label="Capacity per Aisle" align="center" prop="aisleMaxCapacity" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary"  @click="handleUpdate(scope.row)" v-hasPermi="['manage:vmType:edit']">修改</el-button>
-          <el-button link type="primary"  @click="handleDelete(scope.row)" v-hasPermi="['manage:vmType:remove']">删除</el-button>
+          <el-button link type="primary" @click="handleUpdate(scope.row)"
+            v-hasPermi="['manage:vmType:edit']">修改</el-button>
+          <el-button link type="primary" @click="handleDelete(scope.row)"
+            v-hasPermi="['manage:vmType:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
+      @pagination="getList" />
 
     <!-- 添加或修改Machine Types对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
@@ -95,14 +64,15 @@
           <el-input v-model="form.code" placeholder="请输入Code" />
         </el-form-item>
         <el-form-item label="Aisle Num" prop="rowCount">
-          <el-input-number v-model="form.rowCount" :min="1" :max="10" placeholder="请输入Number of Rows" /> Row &nbsp;&nbsp;
+          <el-input-number v-model="form.rowCount" :min="1" :max="10" placeholder="请输入Number of Rows" /> Row
+          &nbsp;&nbsp;
           <el-input-number v-model="form.colCount" :min="1" :max="10" placeholder="请输入Number of Columns" /> Col
         </el-form-item>
         <el-form-item label="Capacity" prop="aisleMaxCapacity">
-          <el-input-number v-model="form.aisleMaxCapacity" :min="1" :max="100"  />
+          <el-input-number v-model="form.aisleMaxCapacity" :min="1" :max="100" />
         </el-form-item>
         <el-form-item label="Image" prop="image">
-          <image-upload v-model="form.image"/>
+          <image-upload v-model="form.image" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -253,12 +223,12 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除Machine Types编号为"' + _ids + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除Machine Types编号为"' + _ids + '"的数据项？').then(function () {
     return delVmType(_ids);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
+  }).catch(() => { });
 }
 
 /** 导出按钮操作 */

@@ -2,12 +2,7 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="name" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入name"
-          clearable
-          @keyup.enter="handleQuery"
-        />
+        <el-input v-model="queryParams.name" placeholder="请输入name" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -17,42 +12,19 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['manage:vendor:add']"
-        >新增</el-button>
+        <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['manage:vendor:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manage:vendor:edit']"
-        >修改</el-button>
+        <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate"
+          v-hasPermi="['manage:vendor:edit']">修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['manage:vendor:remove']"
-        >删除</el-button>
+        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['manage:vendor:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['manage:vendor:export']"
-        >导出</el-button>
+        <el-button type="warning" plain icon="Download" @click="handleExport"
+          v-hasPermi="['manage:vendor:export']">导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -73,24 +45,23 @@
 
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vendor:edit']">修改</el-button>
-          <el-button link type="primary" @click="handleDelete(scope.row)" v-hasPermi="['manage:vendor:remove']">删除</el-button>
-          <el-button link type="primary" @click="handleResetPassword(scope.row)" v-hasPermi="['manage:vendor:edit']">ResetPassword</el-button>
-          <el-button link type="primary" @click="handleViewDetails(scope.row)" v-hasPermi="['manage:vendor:query']">ViewDetails</el-button>
+          <el-button link type="primary" @click="handleUpdate(scope.row)"
+            v-hasPermi="['manage:vendor:edit']">修改</el-button>
+          <el-button link type="primary" @click="handleDelete(scope.row)"
+            v-hasPermi="['manage:vendor:remove']">删除</el-button>
+          <el-button link type="primary" @click="handleResetPassword(scope.row)"
+            v-hasPermi="['manage:vendor:edit']">ResetPassword</el-button>
+          <el-button link type="primary" @click="handleViewDetails(scope.row)"
+            v-hasPermi="['manage:vendor:query']">ViewDetails</el-button>
         </template>
       </el-table-column>
     </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
+      @pagination="getList" />
 
     <!-- 添加或修改vendor对话框 -->
-     <!--  -->
+    <!--  -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="vendorRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="name" prop="name">
@@ -103,7 +74,11 @@
           <el-input v-model="form.phone" placeholder="请输入phone" />
         </el-form-item>
         <el-form-item label="created time" prop="createdTime" v-if="form.id != null">
-            {{ new Date(form.createdTime).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\//g, '-') }} 
+          {{ new Date(form.createdTime).toLocaleString('zh-CN', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour:
+              '2-digit', minute: '2-digit', second: '2-digit'
+          }).replace(/\//g, '-') }}
         </el-form-item>
         <el-form-item label="ratio" prop="ratio">
           <el-input v-model="form.ratio" placeholder="请输入ratio" />
@@ -123,17 +98,17 @@
         </div>
       </template>
     </el-dialog>
-    
 
-  <!-- Vendor details using el-description -->
-  <el-dialog title="Details" v-model="vendorDetails" width="500px" append-to-body>
-    <el-descriptions :column="2" border>
-      <el-descriptions-item label="Vendor Name">{{ form.name }}</el-descriptions-item>
-      <el-descriptions-item label="Contactor">{{ form.contactor }}</el-descriptions-item>
-      <el-descriptions-item label="Phone">{{ form.phone }}</el-descriptions-item>
-      <el-descriptions-item label="Ratio">{{ form.ratio }}%</el-descriptions-item>
-    </el-descriptions>
-  </el-dialog>
+
+    <!-- Vendor details using el-description -->
+    <el-dialog title="Details" v-model="vendorDetails" width="500px" append-to-body>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="Vendor Name">{{ form.name }}</el-descriptions-item>
+        <el-descriptions-item label="Contactor">{{ form.contactor }}</el-descriptions-item>
+        <el-descriptions-item label="Phone">{{ form.phone }}</el-descriptions-item>
+        <el-descriptions-item label="Ratio">{{ form.ratio }}%</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
@@ -257,10 +232,10 @@ function handleUpdate(row) {
 }
 
 const vendorDetails = ref(false);
-/** viewDetials按钮操作 */  
-function handleViewDetails(row){
+/** viewDetials按钮操作 */
+function handleViewDetails(row) {
   reset();
-  const _id  = row.id
+  const _id = row.id
   getVendor(_id).then(response => {
     form.value = response.data;
     vendorDetails.value = true;
@@ -290,23 +265,23 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除vendor编号为"' + _ids + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除vendor编号为"' + _ids + '"的数据项？').then(function () {
     return delVendor(_ids);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
+  }).catch(() => { });
 }
 
 
 // reset password
 function handleResetPassword(row) {
-  const _id = row.id ; // what does the ids.value do here?
-  proxy.$modal.confirm('是否确认重置密码vendor编号为"' + _id + '"的数据项？').then(function() {
+  const _id = row.id; // what does the ids.value do here?
+  proxy.$modal.confirm('是否确认重置密码vendor编号为"' + _id + '"的数据项？').then(function () {
     return resetVendorPwd(_id);
   }).then(() => {
     proxy.$modal.msgSuccess("重置密码成功");
-  }).catch(() => {});
+  }).catch(() => { });
 }
 
 /** 导出按钮操作 */

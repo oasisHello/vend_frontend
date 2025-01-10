@@ -1,7 +1,7 @@
 <template>
-<div class="chart">
-  <div id="chartId" ref="EcharRef" class="monitorContainer"></div>
-</div>
+  <div class="chart">
+    <div id="chartId" ref="EcharRef" class="monitorContainer"></div>
+  </div>
 
 </template>
 <script setup>
@@ -10,7 +10,7 @@ import { onMounted } from 'vue';
 const props = defineProps({
   chartOption: {
     type: Object,
-    default: () => {},
+    default: () => { },
   },
 });
 // 坐标轴的颜色
@@ -133,20 +133,22 @@ const getSeriesOption = () => {
   width: 50%;
   height: 100%;
 }
+
 .monitorContainer {
   width: 100%;
   height: 300px;
 
-  & > div {
+  &>div {
     &:first-child {
       width: 100% !important;
 
-      & > canvas {
+      &>canvas {
         width: 100% !important;
       }
     }
   }
 }
+
 .show {
   visibility: visible;
 }

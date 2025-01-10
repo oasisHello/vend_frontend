@@ -1,11 +1,7 @@
 <template>
   <div class="week-month-year">
-    <div
-      v-for="(item, index) in groupList"
-      :key="index"
-      :class="'item ' + (checkedIndex === index ? 'is-checked' : '')"
-      @click="handleChange(index)"
-    >
+    <div v-for="(item, index) in groupList" :key="index" :class="'item ' + (checkedIndex === index ? 'is-checked' : '')"
+      @click="handleChange(index)">
       {{ item.label }}
     </div>
   </div>
@@ -19,12 +15,12 @@ const groupList = ref([
   { label: '年', value: 'year' },
 ]);
 //触发日期
-const handleChange = (index)=>{
-    if(checkedIndex.value===index){
-        return
-    }
-    checkedIndex.value = index
-    emit('handleChange',groupList.value[index].value)
+const handleChange = (index) => {
+  if (checkedIndex.value === index) {
+    return
+  }
+  checkedIndex.value = index
+  emit('handleChange', groupList.value[index].value)
 }
 </script>
 <style lang="scss" scoped>

@@ -2,12 +2,8 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="120px">
       <el-form-item label="Employee name" prop="userName">
-        <el-input
-          v-model="queryParams.userName"
-          placeholder=" Please Input Employee name"
-          clearable
-          @keyup.enter="handleQuery"
-        />
+        <el-input v-model="queryParams.userName" placeholder=" Please Input Employee name" clearable
+          @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -17,42 +13,19 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['manage:emp:add']"
-        >新增</el-button>
+        <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['manage:emp:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['manage:emp:edit']"
-        >修改</el-button>
+        <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate"
+          v-hasPermi="['manage:emp:edit']">修改</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['manage:emp:remove']"
-        >删除</el-button>
+        <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
+          v-hasPermi="['manage:emp:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['manage:emp:export']"
-        >导出</el-button>
+        <el-button type="warning" plain icon="Download" @click="handleExport"
+          v-hasPermi="['manage:emp:export']">导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -66,19 +39,16 @@
       <el-table-column label="Mobile" align="center" prop="mobile" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary"  @click="handleUpdate(scope.row)" v-hasPermi="['manage:emp:edit']">修改</el-button>
-          <el-button link type="primary" @click="handleDelete(scope.row)" v-hasPermi="['manage:emp:remove']">删除</el-button>
+          <el-button link type="primary" @click="handleUpdate(scope.row)"
+            v-hasPermi="['manage:emp:edit']">修改</el-button>
+          <el-button link type="primary" @click="handleDelete(scope.row)"
+            v-hasPermi="['manage:emp:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
+      @pagination="getList" />
 
     <!-- 添加或修改Employee List对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
@@ -88,13 +58,8 @@
         </el-form-item>
         <el-form-item label="Associated role ID" prop="roleId">
           <!-- <el-input v-model="form.roleId" placeholder=" Please Input Associated role ID" /> -->
-           <el-select v-model="form.roleId" placeholder="请选择Associated role ID">
-            <el-option
-              v-for="item in roleList"
-              :key="item.roleId"
-              :label="item.roleName"
-              :value="item.roleId"
-            />
+          <el-select v-model="form.roleId" placeholder="请选择Associated role ID">
+            <el-option v-for="item in roleList" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
           </el-select>
         </el-form-item>
         <el-form-item label="Mobile phone number" prop="mobile">
@@ -103,19 +68,16 @@
         <el-form-item label="Associated region ID" prop="regionId">
           <el-input v-model="form.regionId" placeholder=" Please Input Associated region ID" />
         </el-form-item>
-        <el-form-item lable= "modify time" prop="updateTime" v-if="form.id!=null">
-          {{form.updateTime}}
+        <el-form-item lable="modify time" prop="updateTime" v-if="form.id != null">
+          {{ form.updateTime }}
         </el-form-item>
         <el-form-item label="Profile picture" prop="image">
-          <image-upload v-model="form.image"/>
+          <image-upload v-model="form.image" />
         </el-form-item>
         <el-form-item label="Status (1 active, 0 inactive)" prop="status">
           <el-radio-group v-model="form.status">
-            <el-radio
-              v-for="dict in employee_status"
-              :key="dict.value"
-              :label="parseInt(dict.value)"
-            >{{dict.label}}</el-radio>
+            <el-radio v-for="dict in employee_status" :key="dict.value"
+              :label="parseInt(dict.value)">{{ dict.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -132,7 +94,7 @@
 <script setup name="Emp">
 import { listEmp, getEmp, delEmp, addEmp, updateEmp } from "@/api/manage/emp";
 import { listRole } from "@/api/manage/role";
-import { loadAllParams} from "@/api/page";
+import { loadAllParams } from "@/api/page";
 
 const { proxy } = getCurrentInstance();
 const { employee_status } = proxy.useDict('employee_status');
@@ -278,12 +240,12 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除Employee List编号为"' + _ids + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除Employee List编号为"' + _ids + '"的数据项？').then(function () {
     return delEmp(_ids);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
+  }).catch(() => { });
 }
 
 /** 导出按钮操作 */

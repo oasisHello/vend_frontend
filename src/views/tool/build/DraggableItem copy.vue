@@ -8,8 +8,8 @@
     <el-col :span='element.span' v-else>
       <el-row :gutter="element.gutter" :class="element.class" @click.stop="activeItem(element)">
         <span class="component-name"> {{ element.componentName }} </span>
-        <draggable group="componentsGroup" :animation="340" :list="element.children" class="drag-wrapper" item-key="label"
-          ref="draggableItemRef">
+        <draggable group="componentsGroup" :animation="340" :list="element.children" class="drag-wrapper"
+          item-key="label" ref="draggableItemRef">
           <template #item="scoped">
             <draggable-item :key="scoped.element.renderKey" :drawing-list="element.children" :element="scoped.element"
               :index="index" :active-id="activeId" :form-conf="formConf" @activeItem="activeItem(scoped.element)"

@@ -106,7 +106,7 @@
           <span>{{ form.aisleMaxCapacity }}</span>
         </el-form-item>
 
-        <el-form-item label="Location" prop="locationId" >
+        <el-form-item label="Location" prop="locationId">
           <el-select v-model="form.locationId" placeholder="Location">
             <el-option v-for="item in locationList" :key="item.id" :label="item.address" :value="item.id"></el-option>
           </el-select>

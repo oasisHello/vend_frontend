@@ -13,8 +13,8 @@
             <el-input v-model="formData.value" placeholder=" Please Input 选项值" clearable>
               <template #append>
                 <el-select v-model="dataType" :style="{ width: '100px' }">
-                  <el-option v-for="(item, index) in dataTypeOptions" :key="index" :label="item.label" :value="item.value"
-                    :disabled="item.disabled" />
+                  <el-option v-for="(item, index) in dataTypeOptions" :key="index" :label="item.label"
+                    :value="item.value" :disabled="item.disabled" />
                 </el-select>
               </template>
 

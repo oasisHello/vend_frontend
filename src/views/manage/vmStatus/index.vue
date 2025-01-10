@@ -33,19 +33,20 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Running Status" align="center" >
+      <el-table-column label="Running Status" align="center">
         <template #default="scope">
-          <span v-if="scope.row.runningStatus!=null">
-            {{ JSON.parse(scope.row.runningStatus).status ==ture? 'normal':'Abnormal' }}
+          <span v-if="scope.row.runningStatus != null">
+            {{ JSON.parse(scope.row.runningStatus).status == ture ? 'normal' : 'Abnormal' }}
           </span>
-         <span v-else>Abnormal</span>
-          
+          <span v-else>Abnormal</span>
+
         </template>
       </el-table-column>
 
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" @click="getVMInfo(scope.row)" v-hasPermi="['manage:vm:query']">Details</el-button>
+          <el-button link type="primary" @click="getVMInfo(scope.row)"
+            v-hasPermi="['manage:vm:query']">Details</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -55,7 +56,7 @@
 
     <!-- VM Info Dialog -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-   
+
       <template #footer>
         <div class="dialog-footer">
           <el-button type="primary" @click="submitForm">确 定</el-button>

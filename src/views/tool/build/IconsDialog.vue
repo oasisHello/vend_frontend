@@ -4,8 +4,8 @@
       @close="onClose">
       <template #header="{ close, titleId, titleClass }">
         选择图标
-        <el-input v-model="key" size="small" :style="{ width: '260px' }" placeholder=" Please Input 图标名称" prefix-icon="Search"
-          clearable />
+        <el-input v-model="key" size="small" :style="{ width: '260px' }" placeholder=" Please Input 图标名称"
+          prefix-icon="Search" clearable />
       </template>
       <ul class="icon-ul">
         <li v-for="icon in iconList" :key="icon" :class="active === icon ? 'active-item' : ''" @click="onSelect(icon)">
