@@ -46,13 +46,15 @@
         </template>
       </el-table-column>
       <el-table-column label="region" prop="region.name" />
-      <el-table-column label="vendor" prop="vendor.name"/>
-      <el-table-column label="address" align="left" prop="address" show-overflow-tooltip="true"/>
+      <el-table-column label="vendor" prop="vendor.name" />
+      <el-table-column label="address" align="left" prop="address" show-overflow-tooltip="true" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+          <el-button link type="primary" @click="getLocationInfo(scope.row)"
+            v-hasPermi="['manage:vm:list']">Info</el-button>
+          <el-button link type="primary" @click="handleUpdate(scope.row)"
             v-hasPermi="['manage:location:edit']">修改</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
+          <el-button link type="primary" @click="handleDelete(scope.row)"
             v-hasPermi="['manage:location:remove']">删除</el-button>
         </template>
       </el-table-column>
@@ -94,6 +96,25 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog title="Location Info" v-model="openLocationInfo" width="500px" append-to-body>
+      <el-table :data="vmList" >
+        <el-table-column label="Seq" type="index" width="55" align="center" />
+        <el-table-column label="Inner Code" align="center" prop="innerCode" />
+        <el-table-column label="status" align="center" prop="vmStatus" >
+          <template #default="scope">
+            <dict-tag :options="vm_status" :value="scope.row.vmStatus" />
+          </template>
+        </el-table-column>
+        <el-table-column label="last supply" align="center" prop="lastSupplyTime" show-overflow-tooltip="true">
+          <template #default="scope">
+            <span>{{ parseTime(scope.row.lastSupplyTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+          </template>
+
+        </el-table-column>
+      
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -107,10 +128,18 @@ import {
 } from "@/api/manage/location";
 import { listRegion } from "@/api/manage/region"; // @ is equal to src
 import { listVendor } from "@/api/manage/vendor";
+import { listVm } from "@/api/manage/vm";
 import { loadAllParams } from "@/api/page";
+
+const loadAllParamsLocation = reactive({
+  ...loadAllParams,
+  locationId: null,
+});
+
 
 const { proxy } = getCurrentInstance();
 const { business_type } = proxy.useDict("business_type");
+const { vm_status } = proxy.useDict("vm_status");
 
 const locationList = ref([]);
 const open = ref(false);
@@ -171,7 +200,23 @@ function getvendorList() {
   listVendor(loadAllParams).then((response) => {
     vendorList.value = response.rows;
   });
+
 }
+/** vending machine list */
+const vmList = ref([]);
+const openLocationInfo = ref(false);
+/**
+ *  Using async to Ensure data was loaded before render
+ * @param row 
+ */
+async function getLocationInfo(row) {
+  loadAllParams.locationId = row.id;
+  listVm(loadAllParams).then((response) => {
+    vmList.value = response.rows;
+    openLocationInfo.value = true;
+  });
+}
+
 // 取消按钮
 function cancel() {
   open.value = false;
