@@ -37,6 +37,8 @@
       <el-table-column label="remark" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
+          <el-button link type="primary" @click="getRegionInfo(scope.row)" v-hasPermi="['manage:location:list']">
+            Info</el-button>
           <el-button link type="primary" @click="handleUpdate(scope.row)"
             v-hasPermi="['manage:region:edit']">修改</el-button>
           <el-button link type="primary" @click="handleDelete(scope.row)"
@@ -45,8 +47,8 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize"
-      @pagination="getList" />
+    <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize" @pagination="getList" />
 
     <!-- 添加或修改region对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
@@ -65,12 +67,27 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- region info view -->
+    <el-dialog title="Region Info " v-model="regionInfoOpen" width="500px" append-to-body>
+      <el-form-item label="name" prop="name">
+        <span>{{ form.name }}</span>
+      </el-form-item>
+
+      <el-table  :data="locationList">
+      <el-table-column label="number" type="index" width="80" align="center" prop="id" />
+      <el-table-column label="location name" align="center" prop="name" />
+      <el-table-column label="vm count" align="center" prop="vmCount" />
+    
+    </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Region">
 import { listRegion, getRegion, delRegion, addRegion, updateRegion } from "@/api/manage/region";
-
+import { listLocation } from "@/api/manage/location";
+import { loadAllParams } from "@/api/page";
 const { proxy } = getCurrentInstance();
 
 const regionList = ref([]);
@@ -157,6 +174,33 @@ function handleAdd() {
   open.value = true;
   title.value = "添加region";
 }
+
+/** list region info */
+const locationList = ref([]);
+const regionInfoOpen = ref(false);
+/**
+ * Show region info view
+ * @param {Object} row the row data
+ */
+function getRegionInfo(row) {
+  // region name
+  reset();
+  const _id = row.id
+  getRegion(_id).then(response => {
+    form.value = response.data;
+  });
+
+  // location info
+  loadAllParams.regionId = row.id;
+  listLocation(loadAllParams).then(response => {
+    locationList.value = response.rows;
+  });
+
+  // open region info view
+  regionInfoOpen.value = true;
+}
+
+
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
