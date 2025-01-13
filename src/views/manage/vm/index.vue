@@ -56,9 +56,12 @@
       </el-table-column>
 
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+
         <template #default="scope">
+          <el-button link type="primary" @click="handlePolicy(scope.row)" v-hasPermi="['manage:policy:list']">policy</el-button>
           <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vm:edit']">修改</el-button>
         </template>
+        
       </el-table-column>
     </el-table>
 
@@ -137,6 +140,24 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- policy dialog  -->
+    <el-dialog title="Policy Selection" v-model="openPolicy" width="500px" append-to-body>
+      <el-form ref="vmRef" :model="form" label-width="100px">
+        <el-form-item label="Policy" prop="policyId">
+          <el-select v-model="form.policyId" placeholder="Policy">
+            <el-option v-for="item in policyList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer" style="margin-right: 10px;">
+          <el-button type="primary" @click="submitForm">Confirm</el-button>
+          <el-button @click="cancel">Cancel</el-button>
+        </div>
+      </template>
+    </el-dialog>
+    
   </div>
 </template>
 
@@ -147,7 +168,7 @@ import { listVendor } from "@/api/manage/vendor";
 import { listLocation } from "@/api/manage/location";
 import { loadAllParams } from "@/api/page";
 import { listRegion } from "@/api/manage/region";
-
+import { listPolicy } from "@/api/manage/policy";
 const { proxy } = getCurrentInstance();
 const { vm_status } = proxy.useDict("vm_status"); // Note :  the values stored in the dictionary are strings, not numbers.
 
@@ -200,6 +221,7 @@ function getList() {
 // 取消按钮
 function cancel() {
   open.value = false;
+  openPolicy.value = false;// close policy dialog
   reset();
 }
 
@@ -253,7 +275,12 @@ function handleAdd() {
   open.value = true;
   title.value = "Add Vending Machine Manage";
 }
-
+/** handle policy */
+const openPolicy = ref(false);
+function handlePolicy(row) {
+  form.value = row;
+  openPolicy.value = true;
+}
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
@@ -261,7 +288,7 @@ function handleUpdate(row) {
   getVm(_id).then((response) => {
     form.value = response.data;
     open.value = true;
-    title.value = "Modify Vending Machine Manage";
+    title.value = "Modify Vending Machine";
   });
 }
 
@@ -273,6 +300,7 @@ function submitForm() {
         updateVm(form.value).then((response) => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
+          openPolicy.value = false;
           getList();
         });
       } else {
@@ -326,6 +354,15 @@ function getVendorList() {
     vendorList.value = response.rows;
   });
 }
+
+
+/**query region list */
+const regionList = ref([]);
+function getRegionList() {
+  listRegion(loadAllParams).then((response) => {
+    regionList.value = response.rows;
+  });
+}
 /**query loaction list */
 const locationList = ref([]);
 function getLocationList() {
@@ -334,11 +371,11 @@ function getLocationList() {
   });
 }
 
-/**query region list */
-const regionList = ref([]);
-function getRegionList() {
-  listRegion(loadAllParams).then((response) => {
-    regionList.value = response.rows;
+/** query policy list */
+const policyList = ref([]);
+function getPolicyList() {
+  listPolicy(loadAllParams).then((response) => {
+    policyList.value = response.rows;
   });
 }
 
@@ -348,4 +385,5 @@ getVendorList();
 getVmTypeList();
 getLocationList();
 getList();
+getPolicyList();
 </script>
