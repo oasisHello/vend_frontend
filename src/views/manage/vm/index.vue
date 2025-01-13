@@ -71,7 +71,7 @@
         <el-form-item label="Code" prop="innerCode">
           <span>{{
             form.innerCode == null ? "Auto Generated" : form.innerCode
-          }}</span>
+            }}</span>
         </el-form-item>
 
         <el-form-item label="Supply Time" v-if="form.innerCode != null">

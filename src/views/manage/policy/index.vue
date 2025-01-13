@@ -1,8 +1,11 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="name" prop="name">
-        <el-input v-model="queryParams.name" placeholder="请输入name" clearable @keyup.enter="handleQuery" />
+      <el-form-item label="Name" prop="name">
+        <el-input v-model="queryParams.name" placeholder="请输入Policy Name" clearable @keyup.enter="handleQuery" />
+      </el-form-item>
+      <el-form-item label="Code" prop="code">
+        <el-input v-model="queryParams.code" placeholder="请输入Policy Code" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -12,37 +15,46 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['manage:region:add']">新增</el-button>
+        <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['manage:policy:add']">新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate"
-          v-hasPermi="['manage:region:edit']">修改</el-button>
+          v-hasPermi="['manage:policy:edit']">修改</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete"
-          v-hasPermi="['manage:region:remove']">删除</el-button>
+          v-hasPermi="['manage:policy:remove']">删除</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button type="warning" plain icon="Download" @click="handleExport"
-          v-hasPermi="['manage:region:export']">导出</el-button>
+          v-hasPermi="['manage:policy:export']">导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="regionList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="policyList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="number" type="index" width="80" align="center" prop="id" />
+      <el-table-column label="seq." type="index" width="50" align="center" />
       <el-table-column label="name" align="center" prop="name" />
-      <el-table-column label="locationCount" align="center" prop="locationCount" />
-      <el-table-column label="remark" align="center" prop="remark" />
+      <el-table-column label="code" align="center" prop="code" />
+      <el-table-column label="discount" align="center" prop="discount">
+        <template #default="scope">
+          <span>{{ scope.row.discount }}%</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="create time" align="center" prop="createTime" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-button link type="primary" @click="getRegionInfo(scope.row)" v-hasPermi="['manage:location:list']">
-            Info</el-button>
+          <el-button link type="primary" @click="handleViewInfo(scope.row)"
+            v-hasPermi="['manage:vm:list']">Info</el-button>
           <el-button link type="primary" @click="handleUpdate(scope.row)"
-            v-hasPermi="['manage:region:edit']">修改</el-button>
+            v-hasPermi="['manage:policy:edit']">修改</el-button>
           <el-button link type="primary" @click="handleDelete(scope.row)"
-            v-hasPermi="['manage:region:remove']">删除</el-button>
+            v-hasPermi="['manage:policy:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -50,14 +62,18 @@
     <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize" @pagination="getList" />
 
-    <!-- 添加或修改region对话框 -->
+    <!-- 添加或修改Policy Information对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="regionRef" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="policyRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="name" prop="name">
-          <el-input v-model="form.name" placeholder="请输入name" />
+          <el-input v-model="form.name" placeholder="请输入Policy Name" />
         </el-form-item>
-        <el-form-item label="remark" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+        <el-form-item label="code" prop="code">
+          <span>{{ form.code == null ? "Auto Generated" : form.code }}</span>
+        </el-form-item>
+        <el-form-item label="discount" prop="discount">
+          <el-input-number v-model="form.discount" :precision="0" :min="0" :max="100" />
+          <span style="margin-left: 5px;">%</span>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -68,29 +84,33 @@
       </template>
     </el-dialog>
 
-    <!-- region info view -->
-    <el-dialog title="Region Info " v-model="regionInfoOpen" width="500px" append-to-body>
+    <!-- VM Info Dialog -->
+    <el-dialog title="VM Info" v-model="openView" width="500px" append-to-body>
+
       <el-form-item label="name" prop="name">
-        <span>{{ form.name }}</span>
+        <el-input v-model="form.name" placeholder="请输入Policy Name" disabled />
       </el-form-item>
 
-      <el-table  :data="locationList">
-      <el-table-column label="number" type="index" width="80" align="center" prop="id" />
-      <el-table-column label="location name" align="center" prop="name" />
-      <el-table-column label="vm count" align="center" prop="vmCount" />
-    
-    </el-table>
+      <label>VM List</label>
+
+      <el-table :data="vmList">
+        <el-table-column label="Seq" type="index" width="55" align="center" />
+        <el-table-column label="address" align="center" prop="address" />
+        <el-table-column label="Inner Code" align="center" prop="innerCode" />
+
+      </el-table>
     </el-dialog>
   </div>
 </template>
 
-<script setup name="Region">
-import { listRegion, getRegion, delRegion, addRegion, updateRegion } from "@/api/manage/region";
-import { listLocation } from "@/api/manage/location";
+<script setup name="Policy">
+import { listPolicy, getPolicy, delPolicy, addPolicy, updatePolicy } from "@/api/manage/policy";
+import { listVm } from "@/api/manage/vm";
 import { loadAllParams } from "@/api/page";
+import { el } from "element-plus/es/locales.mjs";
 const { proxy } = getCurrentInstance();
 
-const regionList = ref([]);
+const policyList = ref([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -106,24 +126,22 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     name: null,
+    code: null,
   },
   rules: {
     name: [
-      { required: true, message: "name不能为空", trigger: "blur" }
-    ],
-    remark: [
-      { required: true, message: "remark不能为空", trigger: "blur" }
+      { required: true, message: "Policy Name不能为空", trigger: "blur" }
     ],
   }
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
-/** 查询region列表 */
+/** 查询Policy Information列表 */
 function getList() {
   loading.value = true;
-  listRegion(queryParams.value).then(response => {
-    regionList.value = response.rows;
+  listPolicy(queryParams.value).then(response => {
+    policyList.value = response.rows;
     total.value = response.total;
     loading.value = false;
   });
@@ -140,13 +158,12 @@ function reset() {
   form.value = {
     id: null,
     name: null,
-    createdTime: null,
-    modifiedTime: null,
-    remark: null,
-    createdBy: null,
-    modifiedBy: null
+    code: null,
+    discount: null,
+    createTime: null,
+    updateTime: null
   };
-  proxy.resetForm("regionRef");
+  proxy.resetForm("policyRef");
 }
 
 /** 搜索按钮操作 */
@@ -172,58 +189,47 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset();
   open.value = true;
-  title.value = "添加region";
+  title.value = "添加Policy Information";
 }
-
-/** list region info */
-const locationList = ref([]);
-const regionInfoOpen = ref(false);
-/**
- * Show region info view
- * @param {Object} row the row data
- */
-function getRegionInfo(row) {
-  // region name
+/** View Info */
+const openView = ref(false);
+const vmList = ref([]);
+async function handleViewInfo(row) {
   const _id = row.id
-  getRegion(_id).then(response => {
-    form.value = response.data;
-  });
+  getPolicy(_id).then(response => {
+    form.value = row;
+  })
 
-  // location info
-  loadAllParams.regionId = row.id;
-  listLocation(loadAllParams).then(response => {
-    locationList.value = response.rows;
-  });
-
-  // open region info view
-  regionInfoOpen.value = true;
+  // vm info
+  loadAllParams.policyId = row.id
+  listVm(loadAllParams).then(response => {
+    vmList.value = response.rows;
+    openView.value = true;
+  })
 }
-
-
-
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
   const _id = row.id || ids.value
-  getRegion(_id).then(response => {
+  getPolicy(_id).then(response => {
     form.value = response.data;
     open.value = true;
-    title.value = "修改region";
+    title.value = "修改Policy Information";
   });
 }
 
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["regionRef"].validate(valid => {
+  proxy.$refs["policyRef"].validate(valid => {
     if (valid) {
       if (form.value.id != null) {
-        updateRegion(form.value).then(response => {
+        updatePolicy(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addRegion(form.value).then(response => {
+        addPolicy(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
@@ -236,8 +242,8 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除region编号为"' + _ids + '"的数据项？').then(function () {
-    return delRegion(_ids);
+  proxy.$modal.confirm('是否确认删除Policy Information编号为"' + _ids + '"的数据项？').then(function () {
+    return delPolicy(_ids);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
@@ -246,9 +252,9 @@ function handleDelete(row) {
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download('manage/region/export', {
+  proxy.download('manage/policy/export', {
     ...queryParams.value
-  }, `region_${new Date().getTime()}.xlsx`)
+  }, `policy_${new Date().getTime()}.xlsx`)
 }
 
 getList();
