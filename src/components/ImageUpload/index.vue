@@ -93,11 +93,11 @@ function handleBeforeUpload(file) {
   let isImg = false;
   if (props.fileType.length) {
     let fileExtension = "";
-    if (file.name.lastIndexOf(".") > -1) {
+    if (file.name.lastIndexOf(".") > -1) { // NOTE: whether file name has "." or not
       fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1);
     }
     isImg = props.fileType.some(type => {
-      if (file.type.indexOf(type) > -1) return true;
+      if (file.type.indexOf(type) > -1) return true;// the type of file(uploaded) matches the predefined type.
       if (fileExtension && fileExtension.indexOf(type) > -1) return true;
       return false;
     });
