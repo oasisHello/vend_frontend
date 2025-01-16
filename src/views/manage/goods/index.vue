@@ -37,6 +37,10 @@
         <el-button type="warning" plain icon="Download" @click="handleExport"
           v-hasPermi="['manage:goods:export']">导出</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button type="warning" plain icon="Upload" @click="handleUpload"
+          v-hasPermi="['manage:goods:add']">Upload</el-button>
+      </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -119,6 +123,27 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- Upload dialog -->
+    <el-dialog title="Upload Goods From Excel" v-model="uploadOpen" width="500px" append-to-body>
+      <!-- from element plus-->
+      <el-upload ref="uploadRef" class="upload-demo" :action="uploadExcelUrl" :on-success="handleUploadSuccess" :headers="headers"  :on-error="handleUploadError" :before-upload="handleBeforeUpload"  :limit ="1" :auto-upload="false">
+        <template #trigger>
+          <el-button type="primary">select</el-button>
+        </template>
+
+        <el-button class="ml-3" type="success" @click="submitUpload">
+          upload to server
+        </el-button>
+
+        <template #tip>
+          <div class="el-upload__tip">
+            Only xlsx/xls files can be uploaded within 1MB.
+          </div>
+        </template>
+      </el-upload>
+
+    </el-dialog>
   </div>
 </template>
 
@@ -126,6 +151,9 @@
 import { listGoods, getGoods, delGoods, addGoods, updateGoods } from "@/api/manage/goods";
 import { listGoods_type } from "@/api/manage/goods_type";
 import { loadAllParams } from "@/api/page";
+import { getToken } from "@/utils/auth";
+import { get } from "@vueuse/core";
+
 const { proxy } = getCurrentInstance();
 
 const goodsList = ref([]);
@@ -137,6 +165,10 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+/** excel upload url */
+const uploadExcelUrl = ref(import.meta.env.VITE_APP_BASE_API + "/manage/goods/import"); // 上传文件服务器地址
+/** headers */
+const headers = ref({ Authorization: "Bearer " + getToken() });
 
 const data = reactive({
   form: {},
@@ -271,12 +303,96 @@ function handleExport() {
     ...queryParams.value
   }, `goods_${new Date().getTime()}.xlsx`)
 }
+/** upload button */
+const uploadOpen = ref(false);
+// open the upload dialog
+function handleUpload() {
+  uploadOpen.value = true;
+}
 
+/** goods type */
 const goodsTypeList = ref([]);
 function getGoodsTypeList() {
   listGoods_type(loadAllParams).then(response => {
     goodsTypeList.value = response.rows;
   });
+}
+
+const uploadRef = ref({});
+function submitUpload() {
+  uploadRef.value.submit();
+}
+
+const uploadList = ref([]);
+// 上传成功回调
+function handleUploadSuccess(res, file) {
+  proxy.$modal.closeLoading();
+  if (res.code === 200) {
+    uploadList.value.push({ name: res.fileName, url: res.fileName });
+    proxy.$modal.msgSuccess("Successfully uploaded the file: " + res.fileName);
+    uploadOpen.value = false;// close upload dialog
+    getList();// refresh list
+  } else {
+    proxy.$modal.msgError(res.msg);
+  }
+  uploadRef.value.clearFiles();// NOTE: what is uploadref exactly?
+  proxy.$modal.closeLoading();
+}
+
+// upload failed callback
+function handleUploadError(err, file) {
+  proxy.$modal.msgError("Excel upload failed");
+  proxy.$modal.closeLoading();
+}
+
+// predefined before upload
+const props = defineProps({
+  modelValue: [String, Object, Array],
+  
+  // 大小限制(MB)
+  fileSize: {
+    type: Number,
+    default: 5,
+  },
+  // xls、xlsx
+  fileType: {
+    type: Array,
+    default: () => ["xls", "xlsx"],
+  },
+  // 是否显示提示
+  isShowTip: {
+    type: Boolean,
+    default: true
+  },
+});
+/** handle before upload */
+function handleBeforeUpload(file) {
+  let isExcel = false;
+  if (props.fileType.length) {
+    let fileExtension = "";
+    if (file.name.lastIndexOf(".") > -1) { // NOTE: whether file name has "." or not
+      fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1); // NOTE: get file extension
+    }
+    isExcel = props.fileType.some(type => {
+      if (file.type.indexOf(type) > -1) return true;// NOTE: the type of file(uploaded) matches the predefined type.
+      if (fileExtension && fileExtension.indexOf(type) > -1) return true;//NOTE the extension of file(uploaded) matches the predefined extension.
+      return false;
+    });
+  } 
+  if (!isExcel) {
+    proxy.$modal.msgError(
+      `Invalid file format. Please upload a file with one of these extensions: ${props.fileType.join(", ")}.`
+    );
+    return false;
+  }
+  if (props.fileSize) {
+    const isLt = file.size / 1024 / 1024 < props.fileSize;
+    if (!isLt) {
+      proxy.$modal.msgError(`upload file size cannot exceed ${props.fileSize} MB!`);
+      return false;
+    }
+  }
+  proxy.$modal.loading("Excel uploading, please wait...");
 }
 
 getGoodsTypeList();// preload goods type
