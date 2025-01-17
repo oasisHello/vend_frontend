@@ -97,12 +97,12 @@ function handleBeforeUpload(file) {
       fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1);
     }
     isImg = props.fileType.some(type => {
-      if (file.type.indexOf(type) > -1) return true;// the type of file(uploaded) matches the predefined type.
-      if (fileExtension && fileExtension.indexOf(type) > -1) return true;
+      if (file.type.indexOf(type) > -1) return true;// NOTE: the type of file(uploaded) matches the predefined type.
+      if (fileExtension && fileExtension.indexOf(type) > -1) return true;//NOTE the extension of file(uploaded) matches the predefined extension.
       return false;
     });
   } else {
-    isImg = file.type.indexOf("image") > -1;
+    isImg = file.type.indexOf("image") > -1; //NOTE: whether the uploaded file is an image
   }
   if (!isImg) {
     proxy.$modal.msgError(

@@ -326,7 +326,6 @@ function submitUpload() {
 const uploadList = ref([]);
 // 上传成功回调
 function handleUploadSuccess(res, file) {
-  proxy.$modal.closeLoading();
   if (res.code === 200) {
     uploadList.value.push({ name: res.fileName, url: res.fileName });
     proxy.$modal.msgSuccess("Successfully uploaded the file: " + res.fileName);
