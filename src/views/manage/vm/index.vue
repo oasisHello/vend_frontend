@@ -58,10 +58,13 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 
         <template #default="scope">
-          <el-button link type="primary" @click="handlePolicy(scope.row)" v-hasPermi="['manage:policy:list']">policy</el-button>
+          <el-button link type="primary" @click="handleAisle(scope.row)"
+            v-hasPermi="['manage:vm:edit']">Aisle</el-button>
+          <el-button link type="primary" @click="handlePolicy(scope.row)"
+            v-hasPermi="['manage:policy:list']">policy</el-button>
           <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vm:edit']">修改</el-button>
         </template>
-        
+
       </el-table-column>
     </el-table>
 
@@ -74,7 +77,7 @@
         <el-form-item label="Code" prop="innerCode">
           <span>{{
             form.innerCode == null ? "Auto Generated" : form.innerCode
-            }}</span>
+          }}</span>
         </el-form-item>
 
         <el-form-item label="Supply Time" v-if="form.innerCode != null">
@@ -157,8 +160,37 @@
         </div>
       </template>
     </el-dialog>
-    
+    <!-- 
+    <aisleDialog
+      :open="openAisleDialog"
+      :data="aisleData"
+      @update:open="openAisleDialog = $event"
+      @add-product="handleAddProduct"
+      @delete-product="handleDeleteProduct"
+      @confirm-changes="handleConfirmChanges"
+    /> -->
+
+    <!-- el-dialog with dynamic slides and grid layout -->
+    <el-dialog v-model="openAisleDialog" title="Item Slider" width="70%">
+      <!-- Carousel for sliding items -->
+      <el-carousel indicator-position="outside" arrow="always">
+        <el-carousel-item v-for="(slide, index) in paginatedItems" :key="index">
+          <div class="item-grid">
+            <!-- Displaying 12 items in a 3-row, 4-column grid -->
+            <div v-for="(item, itemIndex) in slide" :key="itemIndex" class="item-card">
+              {{ item }}
+            </div>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
+
+      <!-- Footer with close button -->
+      <template #footer>
+        <el-button type="danger" @click="dialogVisible = false">Close</el-button>
+      </template>
+    </el-dialog>
   </div>
+
 </template>
 
 <script setup name="Vm">
@@ -379,6 +411,61 @@ function getPolicyList() {
   });
 }
 
+/************************* Aisle*********************/
+import aisleDialog from "@/components/AisleLayout/aisleDialog.vue";
+// State for the dialog and data
+const openAisleDialog = ref(false);
+const aisleData = ref({
+  aisleId: null,
+  aisleName: '',
+  products: []
+});
+// open aisle dialog
+function handleAisle(row) {
+  openAisleDialog.value = true;
+  aisleData.value = row.data;
+  console.log(aisleData.value);
+}
+// close aisle dialog
+function closeAisleDialog() {
+  openAisleDialog.value = false;
+}
+// Method to open the aisle dialog and initialize data
+
+
+// Handle events emitted from aisleDialog
+function handleAddProduct(product) {
+  console.log('Adding product:', product);
+}
+
+function handleDeleteProduct(productId) {
+  console.log('Deleting product:', productId);
+}
+
+function handleConfirmChanges(updatedAisleData) {
+  console.log('Confirmed changes:', updatedAisleData);
+  //
+}
+//*********************** Aisle*********************/
+
+const dialogVisible = ref(false);
+const items = ref(Array.from({ length: 48 }, (_, i) => `Item ${i + 1}`));
+const itemsPerPage = 12; // Each slide shows 12 items
+
+// Paginate the items into groups of 12
+const paginatedItems = computed(() => {
+  const slides = [];
+  for (let i = 0; i < items.value.length; i += itemsPerPage) {
+    slides.push(items.value.slice(i, i + itemsPerPage));
+  }
+  return slides;
+});
+
+const openDialog = () => {
+  dialogVisible.value = true;
+};
+
+
 // Preload data(Cache)
 getRegionList();
 getVendorList();
@@ -387,3 +474,24 @@ getLocationList();
 getList();
 getPolicyList();
 </script>
+<style scoped>
+/* Grid styling for 3 rows and 4 columns layout */
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  grid-template-rows: repeat(3, 1fr);    /* 3 rows */
+  gap: 15px;
+  padding: 20px;
+}
+
+/* Styling for each item card */
+.item-card {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  background: #f0f0f0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+</style>
