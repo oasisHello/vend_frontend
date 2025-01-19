@@ -42,3 +42,11 @@ export function delAisle(id) {
     method: "delete",
   });
 }
+
+// query aisle by vm inner code
+export function listAisleByVmCode(innerCode) {
+  return request({
+    url: "/manage/aisle/list/" + innerCode,
+    method: "get",
+  });
+}

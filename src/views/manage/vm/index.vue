@@ -171,22 +171,86 @@
     /> -->
 
     <!-- el-dialog with dynamic slides and grid layout -->
-    <el-dialog v-model="openAisleDialog" title="Item Slider" width="70%">
+
+    <el-dialog v-model="openAisleDialog" title="Item Slider" width="70%" append-to-body>
       <!-- Carousel for sliding items -->
-      <el-carousel indicator-position="outside" arrow="always">
+      <el-row style="margin-bottom: 5px;">
+        <el-col :span="8">
+          Column:
+          <div v-for="item in vmTypeList" :key="item.id">
+            <span v-if="item.id == imported.vmTypeId"> {{ item.colCount }} </span>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          Row:
+          <div v-for="item in vmTypeList" :key="item.id">
+            <span v-if="item.id == imported.vmTypeId"> {{ item.rowCount }} </span>
+          </div>
+        </el-col>
+        <el-col :span="8">
+          Capacity:
+          <div v-for="item in vmTypeList" :key="item.id">
+            <span v-if="item.id == imported.vmTypeId"> {{ item.aisleMaxCapacity }} </span>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-carousel :autoplay="false" indicator-position="outside" arrow="always">
         <el-carousel-item v-for="(slide, index) in paginatedItems" :key="index">
           <div class="item-grid">
-            <!-- Displaying 12 items in a 3-row, 4-column grid -->
-            <div v-for="(item, itemIndex) in slide" :key="itemIndex" class="item-card">
-              {{ item }}
-            </div>
+            <!-- Using the ItemCard Component -->
+            <ItemCard v-for="(item, itemIndex) in slide" :key="itemIndex" :item="item" @add-item="handleAddItem"
+              @remove-item="handleDeleteItem" />
           </div>
         </el-carousel-item>
       </el-carousel>
+    </el-dialog>
 
-      <!-- Footer with close button -->
+    <!-- goods dialog -->
+    <!-- <el-dialog title="Goods Selection" v-model="openAddGoods" width="500px" append-to-body>
+      <el-form ref="addGoodsRef" :model="aisle" label-width="100px">
+        <el-form-item label="Goods" prop="goodsId">
+          <el-select v-model="aisle.goodsId" placeholder="Goods">
+            <el-option v-for="item in goodsList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
       <template #footer>
-        <el-button type="danger" @click="dialogVisible = false">Close</el-button>
+        <div class="dialog-footer" style="margin-right: 10px;">
+          <el-button type="primary" @click="submitAisleForm">Confirm</el-button>
+          <el-button @click="cancel">Cancel</el-button>
+        </div>
+      </template>
+    </el-dialog> -->
+
+    <el-dialog title="Edit Aisle" v-model="openAddGoods" width="500px" append-to-body>
+      <el-form ref="addGoodsRef" :model="aisle" :rules="rules" label-width="150px">
+        <el-form-item label="code">
+          <span>{{ aisle.code }}</span>
+        </el-form-item>
+        <el-form-item label="Goods" prop="goodsId">
+          <el-select v-model="aisle.goodsId" placeholder="Goods">
+            <el-option v-for="item in goodsList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="machine inner code">
+          <span>{{ aisle.innerCode }}</span>
+        </el-form-item>
+        <el-form-item label="max capacity">
+          <span>{{ aisle.maxCapacity }}</span>
+        </el-form-item>
+        <el-form-item label="current capacity">
+          <span>{{ aisle.currentCapacity }}</span>
+        </el-form-item>
+        <el-form-item label="last supply time">
+          <span>{{ aisle.lastSupplyTime }}</span>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitAisleForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -201,6 +265,8 @@ import { listLocation } from "@/api/manage/location";
 import { loadAllParams } from "@/api/page";
 import { listRegion } from "@/api/manage/region";
 import { listPolicy } from "@/api/manage/policy";
+import { listAisleByVmCode, updateAisle, addAisle, delAisle } from "@/api/manage/aisle";
+import { listGoods } from "@/api/manage/goods";
 const { proxy } = getCurrentInstance();
 const { vm_status } = proxy.useDict("vm_status"); // Note :  the values stored in the dictionary are strings, not numbers.
 
@@ -344,6 +410,27 @@ function submitForm() {
       }
     }
   });
+
+}
+
+function submitAisleForm() {
+  proxy.$refs["addGoodsRef"].validate(valid => {
+    if (valid) {
+      if (aisle.value.id != null) {
+        updateAisle(aisle.value).then(response => {
+          proxy.$modal.msgSuccess("修改成功");
+          open.value = false;
+          getList();
+        });
+      } else {
+        addAisle(aisle.value).then(response => {
+          proxy.$modal.msgSuccess("新增成功");
+          open.value = false;
+          getList();
+        });
+      }
+    }
+  });
 }
 
 /** 删除按钮操作 */
@@ -411,61 +498,69 @@ function getPolicyList() {
   });
 }
 
+// query goods list
+const goodsList = ref([]);
+function getGoodsList() {
+  listGoods(loadAllParams).then((response) => {
+    goodsList.value = response.rows;
+  })
+}
 /************************* Aisle*********************/
-import aisleDialog from "@/components/AisleLayout/aisleDialog.vue";
 // State for the dialog and data
 const openAisleDialog = ref(false);
-const aisleData = ref({
-  aisleId: null,
-  aisleName: '',
-  products: []
-});
+const aisleList = ref({});
+
 // open aisle dialog
 function handleAisle(row) {
+  imported.value = row;// NOTE: retrieve data of current row.
+  listAisleByVmCode(row.innerCode).then(response => {
+    aisleList.value = response.data;
+  })
   openAisleDialog.value = true;
-  aisleData.value = row.data;
-  console.log(aisleData.value);
+  console.log(imported);
+  console.log(aisleList);
 }
-// close aisle dialog
-function closeAisleDialog() {
-  openAisleDialog.value = false;
-}
-// Method to open the aisle dialog and initialize data
+//*********************** Aisle 2*********************/
+import ItemCard from './ItemCard.vue';
+/**
+ * Opens the dialog for aisle configuration
+ * 
+ */
+const openDialog = () => {
 
+};
+// Example data
+const imported = ref([]);
 
-// Handle events emitted from aisleDialog
-function handleAddProduct(product) {
-  console.log('Adding product:', product);
-}
+const itemsPerPage = 8;
 
-function handleDeleteProduct(productId) {
-  console.log('Deleting product:', productId);
-}
-
-function handleConfirmChanges(updatedAisleData) {
-  console.log('Confirmed changes:', updatedAisleData);
-  //
-}
-//*********************** Aisle*********************/
-
-const dialogVisible = ref(false);
-const items = ref(Array.from({ length: 48 }, (_, i) => `Item ${i + 1}`));
-const itemsPerPage = 12; // Each slide shows 12 items
-
-// Paginate the items into groups of 12
+// Paginate items
 const paginatedItems = computed(() => {
-  const slides = [];
-  for (let i = 0; i < items.value.length; i += itemsPerPage) {
-    slides.push(items.value.slice(i, i + itemsPerPage));
+  const pages = [];
+  for (let i = 0; i < aisleList.value.length; i += itemsPerPage) {
+    pages.push(aisleList.value.slice(i, i + itemsPerPage));
   }
-  return slides;
+  return pages;
 });
 
-const openDialog = () => {
-  dialogVisible.value = true;
+// Handle button actions
+const openAddGoods = ref(false);
+const aisle = ref({});
+const handleAddItem = (item) => {
+  openAddGoods.value = true;
+  aisle.value = item;
+  console.log(aisle);
 };
 
-
+const handleDeleteItem = (item) => {
+  aisle.value = item;
+  aisle.value.goodsId = null;
+  if (aisle.value.id != null) {
+    updateAisle(aisle.value).then(response => {
+      proxy.$modal.msgSuccess("修改成功");
+    });
+  }
+  };
 // Preload data(Cache)
 getRegionList();
 getVendorList();
@@ -473,13 +568,17 @@ getVmTypeList();
 getLocationList();
 getList();
 getPolicyList();
+getGoodsList();
 </script>
+
 <style scoped>
 /* Grid styling for 3 rows and 4 columns layout */
 .item-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns */
-  grid-template-rows: repeat(3, 1fr);    /* 3 rows */
+  grid-template-columns: repeat(4, 1fr);
+  /* 4 columns */
+  grid-template-rows: repeat(3, 1fr);
+  /* 3 rows */
   gap: 15px;
   padding: 20px;
 }
@@ -492,6 +591,12 @@ getPolicyList();
   text-align: center;
   font-weight: bold;
   background: #f0f0f0;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 20px;
 }
 </style>
