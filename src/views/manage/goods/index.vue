@@ -152,7 +152,6 @@ import { listGoods, getGoods, delGoods, addGoods, updateGoods } from "@/api/mana
 import { listGoods_type } from "@/api/manage/goods_type";
 import { loadAllParams } from "@/api/page";
 import { getToken } from "@/utils/auth";
-import { get } from "@vueuse/core";
 
 const { proxy } = getCurrentInstance();
 
@@ -257,7 +256,10 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const _id = row.id || ids.value
+  //Bug012402
+  //const _id = row.id || ids.value
+  //Bugfix012402
+  const _id = row.id;
   getGoods(_id).then(response => {
     form.value = response.data;
     open.value = true;
