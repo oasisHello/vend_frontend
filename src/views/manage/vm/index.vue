@@ -206,23 +206,7 @@
       </el-carousel>
     </el-dialog>
 
-    <!-- goods dialog -->
-    <!-- <el-dialog title="Goods Selection" v-model="openAddGoods" width="500px" append-to-body>
-      <el-form ref="addGoodsRef" :model="aisle" label-width="100px">
-        <el-form-item label="Goods" prop="goodsId">
-          <el-select v-model="aisle.goodsId" placeholder="Goods">
-            <el-option v-for="item in goodsList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer" style="margin-right: 10px;">
-          <el-button type="primary" @click="submitAisleForm">Confirm</el-button>
-          <el-button @click="cancel">Cancel</el-button>
-        </div>
-      </template>
-    </el-dialog> -->
-
+    <!-- Edit the goods in aisle. -->
     <el-dialog title="Edit Aisle" v-model="openAddGoods" width="500px" append-to-body>
       <el-form ref="addGoodsRef" :model="aisle" :rules="rules" label-width="150px">
         <el-form-item label="code">
@@ -419,14 +403,18 @@ function submitAisleForm() {
       if (aisle.value.id != null) {
         updateAisle(aisle.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
-          open.value = false;
-          getList();
+          listAisleByVmCode(imported.value.innerCode).then(response => {
+            aisleList.value = response.data;
+          })
+          openAddGoods.value = false;
         });
       } else {
         addAisle(aisle.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
-          open.value = false;
-          getList();
+          listAisleByVmCode(imported.value.innerCode).then(response => {
+            aisleList.value = response.data;
+          })
+          openAddGoods.value = false;
         });
       }
     }
@@ -549,18 +537,21 @@ const aisle = ref({});
 const handleAddItem = (item) => {
   openAddGoods.value = true;
   aisle.value = item;
-  console.log(aisle);
 };
 
 const handleDeleteItem = (item) => {
   aisle.value = item;
-  aisle.value.goodsId = null;
+  aisle.value.goodsId = 0;
   if (aisle.value.id != null) {
     updateAisle(aisle.value).then(response => {
       proxy.$modal.msgSuccess("修改成功");
     });
+    listAisleByVmCode(imported.value.innerCode).then(response => {
+      aisleList.value = response.data;
+    })
+    openAddGoods.value = false;
   }
-  };
+};
 // Preload data(Cache)
 getRegionList();
 getVendorList();
