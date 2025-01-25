@@ -42,3 +42,17 @@ export function delEmp(id) {
     method: "delete",
   });
 }
+// query the operator by machine info
+export function listOperatorByInnerCode(innerCode) {
+  return request({
+    url: "/manage/emp/listOperatorByInnerCode/" + innerCode,
+    method: "get",
+  });
+}
+// query the technician by machine info
+export function listTechnicianByInnerCode(innerCode) {
+  return request({
+    url: "/manage/emp/listTechnicianByInnerCode/" + innerCode,
+    method: "get",
+  });
+}
