@@ -32,11 +32,11 @@
 
     <el-table v-loading="loading" :data="empList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="Num" type="index" width="70" align="center" prop="id" />
-      <el-table-column label="Employee" align="center" prop="userName" />
-      <el-table-column label="Region" align="center" prop="regionName" />
-      <el-table-column label="Role name" align="center" prop="roleName" />
-      <el-table-column label="Mobile" align="center" prop="mobile" />
+      <el-table-column label="Seq." type="index" width="70" align="center" prop="id" />
+      <el-table-column label="name" align="center" prop="userName" />
+      <el-table-column label="region" align="center" prop="regionName" />
+      <el-table-column label="role name" align="center" prop="roleName" />
+      <el-table-column label="mobile" align="center" prop="mobile" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" @click="handleUpdate(scope.row)"
@@ -52,29 +52,31 @@
 
     <!-- 添加或修改Employee List对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="empRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="Employee name" prop="userName">
+      <el-form ref="empRef" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="name" prop="userName">
           <el-input v-model="form.userName" placeholder=" Please Input Employee name" />
         </el-form-item>
-        <el-form-item label="Associated role ID" prop="roleId">
+        <el-form-item label="role name" prop="roleId">
           <!-- <el-input v-model="form.roleId" placeholder=" Please Input Associated role ID" /> -->
           <el-select v-model="form.roleId" placeholder="请选择Associated role ID">
             <el-option v-for="item in roleList" :key="item.roleId" :label="item.roleName" :value="item.roleId" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Mobile phone number" prop="mobile">
+        <el-form-item label="mobile" prop="mobile">
           <el-input v-model="form.mobile" placeholder=" Please Input Mobile phone number" />
         </el-form-item>
-        <el-form-item label="Associated region ID" prop="regionId">
-          <el-input v-model="form.regionId" placeholder=" Please Input Associated region ID" />
+        <el-form-item label="region" prop="regionId">
+          <el-select v-model="form.regionId" placeholder="请选择Associated region ID">
+            <el-option v-for="item in regionList" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
         </el-form-item>
-        <el-form-item lable="modify time" prop="updateTime" v-if="form.id != null">
+        <el-form-item lable="modify" prop="updateTime" v-if="form.id != null">
           {{ form.updateTime }}
         </el-form-item>
-        <el-form-item label="Profile picture" prop="image">
+        <el-form-item label="picture" prop="image">
           <image-upload v-model="form.image" />
         </el-form-item>
-        <el-form-item label="Status (1 active, 0 inactive)" prop="status">
+        <el-form-item label="Status" prop="status">
           <el-radio-group v-model="form.status">
             <el-radio v-for="dict in employee_status" :key="dict.value"
               :label="parseInt(dict.value)">{{ dict.label }}</el-radio>
@@ -93,6 +95,7 @@
 
 <script setup name="Emp">
 import { listEmp, getEmp, delEmp, addEmp, updateEmp } from "@/api/manage/emp";
+import { listRegion } from "@/api/manage/region";
 import { listRole } from "@/api/manage/role";
 import { loadAllParams } from "@/api/page";
 
@@ -262,6 +265,13 @@ function getRoleList() {
     roleList.value = response.rows;
   });
 }
+const regionList = ref([]);
+function getRegionList() {
+  listRegion(loadAllParams).then(response => {
+    regionList.value = response.rows;
+  });
+}
 getRoleList();
+getRegionList();
 getList();
 </script>
