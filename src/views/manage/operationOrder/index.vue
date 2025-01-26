@@ -82,8 +82,10 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="vmInnerCode">
-          <el-button label="supply order" type="primary" @click="getListAisleByVmCode(form.vmInnerCode)">supply
-            order</el-button>
+          <el-button label="supply order" type="primary" @click="getAisleListByVmInnerCode(form.vmInnerCode)"
+            :disabled="!form.vmInnerCode">
+            supply order
+          </el-button>
           <span v-if="!form.vmInnerCode" style="color: red;">VM Inner Code is undefined</span>
         </el-form-item>
 
@@ -91,15 +93,12 @@
           <span v-if="form.regionId">{{ regionList.find(item => item.id === form.regionId)?.name }}</span>
         </el-form-item>
         <el-form-item label="type" prop="type">
-          <el-select v-model="form.type" placeholder="请选择Type">
+          <el-select v-model="form.typeId" placeholder="请选择Type">
             <el-option v-for="item in orderTypeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="description" prop="description">
           <el-input v-model="form.description" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="assignor" prop="assignorId">
-          <el-input v-model="form.assignorId" placeholder="请输入Assignor ID" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -119,13 +118,49 @@
             <span>{{ goodsList.find(item => item.id === scope.row.goodsId)?.name }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="available volumn" align="center">
+          <template #default="scope">
+            <span>{{ form.details[scope.$index].availableCapacity }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="current volumn" align="center" prop="currentCapacity" />
-        <el-table-column label="available volumn" align="center" prop="maxCapacity" />
+        <!-- <el-table-column label="available volumn" align="center" prop="availableCapacity" /> -->
+        <el-table-column label="supply volume" align="center">
+          <template #default="scope">
+            <el-input-number v-model="form.details[scope.$index].availableCapacity" :min="0"
+              :max="scope.row.maxCapacity - scope.row.currentCapacity" /><!--NOTE:after change the supplyVolume, the currentCapacity will be reset-->
+          </template>
+        </el-table-column>
+      </el-table>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="openDialog = false">取消</el-button>
+          <el-button type="primary" @click="handleSubmit">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <el-dialog v-model="openEditDialog" title="添加" width="80%">
+      <el-table v-loading="loading" :data="aisleList" @selection-change="handleSelectionChange">
+        <el-table-column label="seq." type="index" align="center" width="80" />
+        <el-table-column label="aisle code" align="center" prop="code" />
+        <el-table-column label="goods name" align="center" prop="goodsId">
+          <template #default="scope">
+            <span>{{ goodsList.find(item => item.id === scope.row.goodsId)?.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="available volumn" align="center">
+          <template #default="scope">
+            <span>{{ form.details[scope.$index].availableCapacity }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="current volumn" align="center" prop="currentCapacity" />
+        <!-- <el-table-column label="available volumn" align="center" prop="availableCapacity" /> -->
         <el-table-column label="supply volume" align="center">
           <template #default="scope">
             <el-input-number v-model="scope.row.supplyVolume" :min="0"
               :max="scope.row.maxCapacity - scope.row.currentCapacity"
-              @change="scope.row.currentCapacity += scope.row.supplyVolume" /><!--NOTE:after change the supplyVolume, the currentCapacity will be reset-->
+              @change="form.details[scope.$index].availableCapacity += scope.row.supplyVolume" /><!--NOTE:after change the supplyVolume, the currentCapacity will be reset-->
           </template>
         </el-table-column>
       </el-table>
@@ -148,7 +183,7 @@ import { listRegion } from "@/api/manage/region";
 import { listOrderTypeByParentId } from "@/api/manage/order_type";
 import { listAisleByVmCode } from "@/api/manage/aisle";
 import { listGoods } from "@/api/manage/goods";
-import { get } from "@vueuse/core";
+import { getOperationOrderWithDetail } from "@/api/manage/order";
 const { proxy } = getCurrentInstance();
 const { order_status, is_auto_generated } = proxy.useDict('order_status', 'is_auto_generated');
 
@@ -162,7 +197,7 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const openDialog = ref(false);
-
+const openEditDialog = ref(false);
 
 const data = reactive({
   form: {},
@@ -216,7 +251,8 @@ function reset() {
     type: null,
     assignorId: null,
     createTime: null,
-    updateTime: null
+    updateTime: null,
+    details:null
   };
   proxy.resetForm("orderRef");
 }
@@ -251,8 +287,9 @@ function handleAdd() {
 function handleUpdate(row) {
   reset();
   const _id = row.id || ids.value
-  getOrder(_id).then(response => {
+  getOperationOrderWithDetail(_id).then(response => {
     form.value = response.data;
+    console.log("form",form.value);
     open.value = true;
     title.value = "修改Order table";
     handleVmInnerCodeChange();//NOTE: empList should be preloaded in advance
@@ -265,11 +302,12 @@ function submitForm() {
     if (valid) {
       if (form.value.id != null) {
         updateOrder({
+          id: form.value.id,
           createType: 1,// operation order is 1
           vmInnerCode: form.value.vmInnerCode,
           userId: form.value.userId,
           assignorId: form.value.assignorId,
-          typeId: form.value.type,
+          typeId: form.value.typeId,
           description: form.value.description,
           details: aisleList.value.filter(aisle => aisle.innerCode === form.value.vmInnerCode).map(item => ({
             aisleCode: item.code,
@@ -289,7 +327,7 @@ function submitForm() {
           vmInnerCode: form.value.vmInnerCode,
           userId: form.value.userId,
           assignorId: form.value.assignorId,
-          typeId: form.value.type,
+          typeId: form.value.typeId,
           description: form.value.description,
           details: aisleList.value.filter(aisle => aisle.innerCode === form.value.vmInnerCode).map(item => ({
             aisleCode: item.code,
@@ -351,16 +389,13 @@ const orderTypeList = ref([]);
 function getOperationOrderType() {
   listOrderTypeByParentId(queryParams.value.params.parentTypeId).then(response => {
     orderTypeList.value = response.data; //NOTE：it is response.data but not response.rows, why?
-    console.log(orderTypeList.value);
   });
 }
 /** get aisle list */
 const aisleList = ref([]);
-function getListAisleByVmCode(vmInnerCode) {
-  console.log(vmInnerCode);
+function getAisleListByVmInnerCode(vmInnerCode) {
   listAisleByVmCode(vmInnerCode).then(response => {
     aisleList.value = response.data;
-    console.log(aisleList.value);
     openDialog.value = true;
   });
 }
@@ -370,12 +405,16 @@ function getAllGoodsList() {
   listGoods(loadAllParams).then(response => {
     goodsList.value = response.rows;
     console.log(goodsList.value);
-  })  
+  })
 }
- function handleSubmit(){
-openDialog.value = false;
- }
+function handleSubmit() {
+  openDialog.value = false;
+}
 
+function handlEditSupplyOrder()
+{
+  openDialog.value = true;
+}
 /** Preload data(Cache) */
 getList();
 getAllRegionList();

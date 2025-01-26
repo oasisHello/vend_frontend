@@ -42,3 +42,10 @@ export function delOrder(id) {
     method: 'delete'
   })
 }
+
+export function getOperationOrderWithDetail(id) {
+  return request({
+    url: '/manage/order/operation/' + id,
+    method: 'get'
+  })
+}
