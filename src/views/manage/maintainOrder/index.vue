@@ -76,7 +76,7 @@
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
       <el-form ref="orderRef" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="order code" prop="code">
-          <span>{{ form.code }}</span>
+          <span>{{ form.id == null ? "auto filled" : form.code }}</span>
         </el-form-item>
         <el-form-item label="vm inner code" prop="vmInnerCode">
           <!--// NOTE:after change the vmInnerCode, the userId will be reset-->
@@ -84,6 +84,7 @@
             @change="() => { form.userId = ''; handleVmInnerCodeChange(); }">
             <el-option v-for="item in vmList" :key="item.id" :label="item.innerCode" :value="item.innerCode"
               @click="form.regionId = item.regionId"></el-option>
+            <span v-if="!form.vmInnerCode" style="color: red;">VM Inner Code is undefined</span>
           </el-select>
         </el-form-item>
 
@@ -92,21 +93,17 @@
             <el-option v-for="item in empList" :key="item.id" :label="item.userName" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item prop="vmInnerCode">
-          <el-button label="supply order" type="primary" @click="getAisleListByVmInnerCode(form.vmInnerCode)"
-            :disabled="!form.vmInnerCode">
-            supply order
-          </el-button>
-          <span v-if="!form.vmInnerCode" style="color: red;">VM Inner Code is undefined</span>
-        </el-form-item>
 
         <el-form-item label="region" prop="regionId">
           <span v-if="form.regionId">{{ regionList.find(item => item.id === form.regionId)?.name }}</span>
         </el-form-item>
-        <el-form-item label="type" prop="type">
+        <el-form-item label="type" prop="typeId">
           <el-select v-model="form.typeId" placeholder="请选择Type">
             <el-option v-for="item in orderTypeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item v-if="form.id != null" label="status" prop="status">
+          <dict-tag :options="order_status" :value="form.status" />
         </el-form-item>
         <el-form-item label="description" prop="description">
           <el-input v-model="form.description" type="textarea" placeholder="请输入内容" />
@@ -230,6 +227,12 @@ const data = reactive({
     vmInnerCode: [
       { required: true, message: "vm innner code不能为空", trigger: "blur" }
     ],
+    userId: [
+      { required: true, message: "user不能为空", trigger: "blur" }
+    ],
+    typeId: [
+      { required: true, message: "type不能为空", trigger: "blur" }
+    ],
   }
 });
 
@@ -266,7 +269,7 @@ function reset() {
     assignorId: null,
     createTime: null,
     updateTime: null,
-    details:null
+    details: null
   };
   proxy.resetForm("orderRef");
 }
@@ -303,10 +306,11 @@ function handleUpdate(row) {
   const _id = row.id || ids.value
   getOperationOrderWithDetail(_id).then(response => {
     form.value = response.data;
-    console.log("form",form.value);
+    console.log("form", form.value);
+    handleVmInnerCodeChange();//NOTE: empList should be preloaded in advance
     open.value = true;
     title.value = "修改Order table";
-    handleVmInnerCodeChange();//NOTE: empList should be preloaded in advance
+    
   });
 }
 
@@ -323,13 +327,7 @@ function submitForm() {
           assignorId: form.value.assignorId,
           typeId: form.value.typeId,
           description: form.value.description,
-          details: aisleList.value.filter(aisle => aisle.innerCode === form.value.vmInnerCode).map(item => ({
-            aisleCode: item.code,
-            availableCapacity: item.maxCapacity - item.currentCapacity,
-            goodsId: item.goodsId,
-            goodsName: item.goods.goodsName,
-            goodsImage: item.goods.goodsImage,
-          })),
+    
         }).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
@@ -343,13 +341,6 @@ function submitForm() {
           assignorId: form.value.assignorId,
           typeId: form.value.typeId,
           description: form.value.description,
-          details: aisleList.value.filter(aisle => aisle.innerCode === form.value.vmInnerCode).map(item => ({
-            aisleCode: item.code,
-            availableCapacity: item.maxCapacity - item.currentCapacity,
-            goodsId: item.goodsId,
-            goodsName: item.goods.goodsName,
-            goodsImage: item.goods.goodsImage,
-          })),
         }).then(response => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
@@ -382,7 +373,6 @@ function handleVmInnerCodeChange() {
   let vmInnerCode = form.value.vmInnerCode;
   listTechnicianByInnerCode(vmInnerCode).then(response => {
     empList.value = response.data;
-    console.log(empList);
   });
 }
 const vmList = ref([]);
@@ -425,8 +415,7 @@ function handleSubmit() {
   openDialog.value = false;
 }
 
-function handlEditSupplyOrder()
-{
+function handlEditSupplyOrder() {
   openDialog.value = true;
 }
 /** Preload data(Cache) */
