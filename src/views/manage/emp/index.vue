@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="120px">
-      <el-form-item label="Employee name" prop="userName">
-        <el-input v-model="queryParams.userName" placeholder=" Please Input Employee name" clearable
+      <el-form-item label="Assignee" prop="userName">
+        <el-input v-model="queryParams.userName" placeholder=" Please Input Assignee" clearable
           @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
@@ -34,7 +34,11 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="Seq." type="index" width="70" align="center" prop="id" />
       <el-table-column label="name" align="center" prop="userName" />
-      <el-table-column label="region" align="center" prop="regionName" />
+      <el-table-column label="region" width="70"  prop="regionId">
+        <template #default="scope">
+          {{ regionList.find(item => item.id === scope.row.regionId)?.name }}
+        </template>
+      </el-table-column>
       <el-table-column label="role name" align="center" prop="roleName" />
       <el-table-column label="mobile" align="center" prop="mobile" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
