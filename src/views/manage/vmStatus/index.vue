@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="Inner Code" prop="innerCode">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="90px">
+      <el-form-item label="device code" prop="innerCode" label-width="100px">
         <el-input v-model="queryParams.innerCode" placeholder="请输入Inner Code" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
@@ -35,11 +35,7 @@
 
       <el-table-column label="Running Status" align="center">
         <template #default="scope">
-          <span v-if="scope.row.runningStatus != null">
-            {{ JSON.parse(scope.row.runningStatus).status == ture ? 'normal' : 'Abnormal' }}
-          </span>
-          <span v-else>Abnormal</span>
-
+          <dict-tag :options="device_running_status" :value="scope.row.runningStatus" />
         </template>
       </el-table-column>
 
@@ -56,7 +52,7 @@
 
     <!-- VM Info Dialog -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-
+      <div style="color:red; text-align:center;">This page is under development...</div>
       <template #footer>
         <div class="dialog-footer">
           <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -74,9 +70,11 @@ import { listVendor } from "@/api/manage/vendor";
 import { listLocation } from "@/api/manage/location";
 import { loadAllParams } from "@/api/page";
 import { listRegion } from "@/api/manage/region";
+import { de } from "element-plus/es/locales.mjs";
 
 const { proxy } = getCurrentInstance();
-const { vm_status } = proxy.useDict("vm_status"); // Note :  the values stored in the dictionary are strings, not numbers.
+const { vm_status, device_running_status } = proxy.useDict("vm_status", "device_running_status"); // Note :  the values stored in the dictionary are strings, not numbers.
+
 
 const vmList = ref([]);
 const open = ref(false);
@@ -188,7 +186,7 @@ function getVMInfo(row) {
   getVm(_id).then((response) => {
     form.value = response.data;
     open.value = true;
-    title.value = "VM Info";
+    title.value = "Device Info";
   });
 }
 
