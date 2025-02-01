@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="90px">
       <el-form-item label="Name" prop="name">
         <el-input v-model="queryParams.name" placeholder="请输入Name" clearable @keyup.enter="handleQuery" />
       </el-form-item>
@@ -33,7 +33,7 @@
 
     <el-table v-loading="loading" :data="goods_typeList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="seq." type="index" align="center" prop="id" />
+      <el-table-column label="seq" type="index" align="center" prop="id" width="60" />
       <el-table-column label="name" align="center" prop="name" />
       <el-table-column label="code" align="center" prop="code" />
       <el-table-column label="created date" align="center" prop="createTime" width="180">
@@ -159,7 +159,7 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset();
   open.value = true;
-  title.value = "添加Product type table";
+  title.value = "Add Goods Type";
 }
 
 /** 修改按钮操作 */
@@ -169,7 +169,7 @@ function handleUpdate(row) {
   getGoods_type(_id).then(response => {
     form.value = response.data;
     open.value = true;
-    title.value = "修改Product type table";
+    title.value = "Edit Goods Type";
   });
 }
 
