@@ -35,6 +35,15 @@ export function updateAisle(data) {
   });
 }
 
+// reset the aisle
+export function resetAisle(data) {
+  return request({
+    url: "/manage/aisle/reset",
+    method: "put",
+    data: data,
+  });
+}
+
 // 删除Aisle Information
 export function delAisle(id) {
   return request({

@@ -249,8 +249,9 @@
           <span>{{ aisle.code }}</span>
         </el-form-item>
         <el-form-item label="Goods" prop="goodsId">
-          <el-select v-model="aisle.goodsId" placeholder="Goods">
-            <el-option v-for="item in goodsList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          <el-select v-model="aisle.goodsId" placeholder="NULL">
+            <el-option v-for="item in goodsList" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="machine inner code">
@@ -285,7 +286,7 @@ import { listLocation } from "@/api/manage/location";
 import { loadAllParams } from "@/api/page";
 import { listRegion } from "@/api/manage/region";
 import { listPolicy } from "@/api/manage/policy";
-import { listAisleByVmCode, updateAisle, addAisle, delAisle } from "@/api/manage/aisle";
+import { listAisleByVmCode, updateAisle, addAisle, resetAisle } from "@/api/manage/aisle";
 import { listGoods } from "@/api/manage/goods";
 const { proxy } = getCurrentInstance();
 const { vm_status } = proxy.useDict("vm_status"); // Note :  the values stored in the dictionary are strings, not numbers.
@@ -440,16 +441,16 @@ function submitAisleForm() {
       if (aisle.value.id != null) {
         updateAisle(aisle.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
-          listAisleByVmCode(imported.value.innerCode).then(response => {
-            aisleList.value = response.data;
+          listAisleByVmCode(queryParams.value).then(response => {
+            aisleList.value = response.rows;
           })
           openAddGoods.value = false;
         });
       } else {
         addAisle(aisle.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
-          listAisleByVmCode(imported.value.innerCode).then(response => {
-            aisleList.value = response.data;
+          listAisleByVmCode(queryParams.value).then(response => {
+            aisleList.value = response.rows;
           })
           openAddGoods.value = false;
         });
@@ -573,24 +574,25 @@ const paginatedItems = computed(() => {
 // Handle button actions
 const openAddGoods = ref(false);
 const aisle = ref({});
-const handleAddItem = (item) => {
+function handleAddItem(row) {
   openAddGoods.value = true;
-  aisle.value = item;
+  aisle.value = row;
 };
 
-const handleDeleteItem = (item) => {
+function handleReset(item) {
   aisle.value = item;
-  aisle.value.goodsId = 0;
   if (aisle.value.id != null) {
-    updateAisle(aisle.value).then(response => {
-      proxy.$modal.msgSuccess("修改成功");
+    resetAisle(aisle.value).then(response => {
+      proxy.$modal.msgSuccess("reset successfully!");
     });
-    listAisleByVmCode(imported.value.innerCode).then(response => {
-      aisleList.value = response.data;
+    queryParams.value.innerCode = item.innerCode;
+    listAisleByVmCode(queryParams.value).then(response => {
+      aisleList.value = response.rows;
     })
     openAddGoods.value = false;
   }
 };
+
 // Preload data(Cache)
 getRegionList();
 getVendorList();
