@@ -44,9 +44,10 @@ export function delAisle(id) {
 }
 
 // query aisle by vm inner code
-export function listAisleByVmCode(innerCode) {
+export function listAisleByVmCode(query) {
   return request({
-    url: "/manage/aisle/list/" + innerCode,
+    url: "/manage/aisle/list_by_vmcode/",
     method: "get",
+    params:query,
   });
 }

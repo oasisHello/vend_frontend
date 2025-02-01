@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="aisle">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="aisle Code" prop="code">
         <el-input v-model="queryParams.code" placeholder="请输入aisle Code" clearable @keyup.enter="handleQuery" />

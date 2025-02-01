@@ -173,38 +173,74 @@
     <!-- el-dialog with dynamic slides and grid layout -->
 
     <el-dialog v-model="openAisleDialog" title="Item Slider" width="70%" append-to-body>
-      <!-- Carousel for sliding items -->
-      <el-row style="margin-bottom: 5px;">
-        <el-col :span="8">
-          Column:
-          <div v-for="item in vmTypeList" :key="item.id">
-            <span v-if="item.id == imported.vmTypeId"> {{ item.colCount }} </span>
+      <el-row class="info-row">
+        <el-col :span="6">
+          <div>
+            Code:
+            <span>
+              {{ imported.innerCode }}
+            </span>
           </div>
         </el-col>
-        <el-col :span="8">
-          Row:
-          <div v-for="item in vmTypeList" :key="item.id">
-            <span v-if="item.id == imported.vmTypeId"> {{ item.rowCount }} </span>
+        <el-col :span="6">
+          <div>
+            Columns:
+            <span v-if="imported.vmTypeId && vmTypeList.find(item => item.id === imported.vmTypeId)">
+              {{ vmTypeList.find(item => item.id === imported.vmTypeId)?.colCount }}
+            </span>
           </div>
         </el-col>
-        <el-col :span="8">
-          Capacity:
-          <div v-for="item in vmTypeList" :key="item.id">
-            <span v-if="item.id == imported.vmTypeId"> {{ item.aisleMaxCapacity }} </span>
+        <el-col :span="6">
+          <div>
+            Rows:
+            <span v-if="imported.vmTypeId && vmTypeList.find(item => item.id === imported.vmTypeId)">
+              {{ vmTypeList.find(item => item.id === imported.vmTypeId)?.rowCount }}
+            </span>
           </div>
         </el-col>
+        <el-col :span="6">
+          <div>
+            Max Capacity:
+            <span v-if="imported.vmTypeId && vmTypeList.find(item => item.id === imported.vmTypeId)">
+              {{ vmTypeList.find(item => item.id === imported.vmTypeId)?.aisleMaxCapacity }}
+            </span>
+          </div>
+        </el-col>
+
       </el-row>
 
-      <el-carousel :autoplay="false" indicator-position="outside" arrow="always">
-        <el-carousel-item v-for="(slide, index) in paginatedItems" :key="index">
-          <div class="item-grid">
-            <!-- Using the ItemCard Component -->
-            <ItemCard v-for="(item, itemIndex) in slide" :key="itemIndex" :item="item" @add-item="handleAddItem"
-              @remove-item="handleDeleteItem" />
-          </div>
-        </el-carousel-item>
-      </el-carousel>
+
+
+      <el-table v-loading="loading" :data="aisleList">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column type="index" label="Seq" width="50" align="center" />
+        <el-table-column label="Aisle Code" align="center" prop="code" />
+        <el-table-column label="Goods Name" align="center">
+          <template #default="scope">
+            <span>{{ goodsList.find(item => item.id === scope.row.goodsId)?.name ?? 'NULL' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Current Capacity" align="center" prop="currentCapacity" />
+        <el-table-column label="Last Supply Time" align="center" prop="lastSupplyTime" width="180">
+          <template #default="scope">
+            <span>{{ parseTime(scope.row.lastSupplyTime, '{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Actions" align="center" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-button link type="primary" @click="handleAddItem(scope.row)"
+              v-hasPermi="['manage:aisle:edit']">Edit</el-button>
+            <el-button link type="primary" @click="handleReset(scope.row)"
+              v-hasPermi="['manage:aisle:edit']">Reset</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <pagination v-show="aislePageTotal > 0" :total="aislePageTotal" v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize" @pagination="handleAisle(imported)" />
+
     </el-dialog>
+
 
     <!-- Edit the goods in aisle. -->
     <el-dialog title="Edit Aisle" v-model="openAddGoods" width="500px" append-to-body>
@@ -304,6 +340,7 @@ function getList() {
 function cancel() {
   open.value = false;
   openPolicy.value = false;// close policy dialog
+  openAisleDialog = false;
   reset();
 }
 
@@ -496,17 +533,19 @@ function getGoodsList() {
 /************************* Aisle*********************/
 // State for the dialog and data
 const openAisleDialog = ref(false);
-const aisleList = ref({});
-
+const aisleList = ref([]);
+const aislePageTotal = ref(0);
 // open aisle dialog
 function handleAisle(row) {
   imported.value = row;// NOTE: retrieve data of current row.
-  listAisleByVmCode(row.innerCode).then(response => {
-    aisleList.value = response.data;
+  queryParams.value.innerCode = row.innerCode;
+  console.log("queryParams", queryParams);
+  listAisleByVmCode(queryParams.value).then(response => {
+    aisleList.value = response.rows;
+    aislePageTotal.value = response.total;
   })
   openAisleDialog.value = true;
-  console.log(imported);
-  console.log(aisleList);
+
 }
 //*********************** Aisle 2*********************/
 import ItemCard from './ItemCard.vue';
@@ -589,5 +628,17 @@ getGoodsList();
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px;
+}
+
+.info-row {
+  font-size: 16px;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.header-info div {
+  margin-bottom: 5px;
 }
 </style>
