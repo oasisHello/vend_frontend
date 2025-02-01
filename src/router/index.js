@@ -66,7 +66,7 @@ export const constantRoutes = [
         path: "/index",
         component: () => import("@/views/tool/swagger"),
         name: "Index",
-        meta: { title: "Front Page", icon: "dashboard", affix: true },
+        meta: { title: "Document", icon: "swagger", affix: true },
       },
     ],
   },
