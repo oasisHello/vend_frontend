@@ -59,9 +59,9 @@
 
         <template #default="scope">
           <el-button link type="primary" @click="handleAisle(scope.row)"
-            v-hasPermi="['manage:vm:edit']">Aisle</el-button>
-          <el-button link type="primary" @click="handlePolicy(scope.row)"
-            v-hasPermi="['manage:policy:list']">policy</el-button>
+            v-hasPermi="['manage:vm:edit']">aisle</el-button>
+          <el-button link type="primary" @click="openPolicyInfo(scope.row)"
+            v-hasPermi="['manage:policy:list']">policy-info</el-button>
           <el-button link type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['manage:vm:edit']">修改</el-button>
         </template>
 
@@ -114,7 +114,7 @@
 
         <el-form-item label="Location" prop="locationId">
           <el-select v-model="form.locationId" placeholder="Location">
-            <el-option v-for="item in locationList" :key="item.id" :label="item.address" :value="item.id"></el-option>
+            <el-option v-for="item in locationList" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
 
@@ -143,34 +143,6 @@
         </div>
       </template>
     </el-dialog>
-
-    <!-- policy dialog  -->
-    <el-dialog title="Policy Selection" v-model="openPolicy" width="500px" append-to-body>
-      <el-form ref="vmRef" :model="form" label-width="100px">
-        <el-form-item label="Policy" prop="policyId">
-          <el-select v-model="form.policyId" placeholder="Policy">
-            <el-option v-for="item in policyList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer" style="margin-right: 10px;">
-          <el-button type="primary" @click="submitForm">Confirm</el-button>
-          <el-button @click="cancel">Cancel</el-button>
-        </div>
-      </template>
-    </el-dialog>
-    <!-- 
-    <aisleDialog
-      :open="openAisleDialog"
-      :data="aisleData"
-      @update:open="openAisleDialog = $event"
-      @add-product="handleAddProduct"
-      @delete-product="handleDeleteProduct"
-      @confirm-changes="handleConfirmChanges"
-    /> -->
-
-    <!-- el-dialog with dynamic slides and grid layout -->
 
     <el-dialog v-model="openAisleDialog" title="Item Slider" width="70%" append-to-body>
       <el-row class="info-row">
@@ -208,8 +180,6 @@
         </el-col>
 
       </el-row>
-
-
 
       <el-table v-loading="loading" :data="aisleList">
         <el-table-column type="selection" width="55" align="center" />
@@ -276,6 +246,8 @@
     </el-dialog>
   </div>
 
+  <PolicyInfo ref="policyInfoRef" :open="openPolicy" :form="form" :policyList="policyList" @confirm="handlePolicyConfirm"
+    @update:open="openPolicy = $event" />
 </template>
 
 <script setup name="Vm">
@@ -288,6 +260,7 @@ import { listRegion } from "@/api/manage/region";
 import { listPolicy } from "@/api/manage/policy";
 import { listAisleByVmCode, updateAisle, addAisle, resetAisle } from "@/api/manage/aisle";
 import { listGoods } from "@/api/manage/goods";
+import PolicyInfo from "@/views/manage/vm/policyInfo.vue"; // Adjust path if needed
 const { proxy } = getCurrentInstance();
 const { vm_status } = proxy.useDict("vm_status"); // Note :  the values stored in the dictionary are strings, not numbers.
 
@@ -300,6 +273,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const openPolicy = ref(false);
 
 const data = reactive({
   form: {},
@@ -326,7 +300,19 @@ const data = reactive({
 });
 
 const { queryParams, form, rules } = toRefs(data);
-
+const openPolicyInfo = (row) => {
+  form.value = row;
+  openPolicy.value = true;
+};
+function handlePolicyConfirm() {
+  if (form.value.id != null) {
+    updateVm(form.value).then(() => {
+      proxy.$modal.msgSuccess("修改成功");
+      openPolicy.value = false;
+      getList();
+    });
+  }
+}
 /** 查询Vending Machine Manage列表 */
 function getList() {
   loading.value = true;
@@ -340,7 +326,6 @@ function getList() {
 // 取消按钮
 function cancel() {
   open.value = false;
-  openPolicy.value = false;// close policy dialog
   openAisleDialog = false;
   reset();
 }
@@ -393,13 +378,7 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset();
   open.value = true;
-  title.value = "Add Vending Machine Manage";
-}
-/** handle policy */
-const openPolicy = ref(false);
-function handlePolicy(row) {
-  form.value = row;
-  openPolicy.value = true;
+  title.value = "Add Vending Machine";
 }
 /** 修改按钮操作 */
 function handleUpdate(row) {
@@ -500,7 +479,6 @@ function getVendorList() {
   });
 }
 
-
 /**query region list */
 const regionList = ref([]);
 function getRegionList() {
@@ -508,6 +486,7 @@ function getRegionList() {
     regionList.value = response.rows;
   });
 }
+
 /**query loaction list */
 const locationList = ref([]);
 function getLocationList() {
@@ -548,15 +527,6 @@ function handleAisle(row) {
   openAisleDialog.value = true;
 
 }
-//*********************** Aisle 2*********************/
-import ItemCard from './ItemCard.vue';
-/**
- * Opens the dialog for aisle configuration
- * 
- */
-const openDialog = () => {
-
-};
 // Example data
 const imported = ref([]);
 
@@ -592,6 +562,7 @@ function handleReset(item) {
     openAddGoods.value = false;
   }
 };
+
 
 // Preload data(Cache)
 getRegionList();
