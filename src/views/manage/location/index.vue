@@ -37,7 +37,7 @@
 
     <el-table v-loading="loading" :data="locationList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="seq." type="index" width="50" align="center" prop="id" />
+      <el-table-column label="seq" type="index" width="70" align="center" prop="id" />
       <el-table-column label="name" align="center" prop="name" />
 
       <el-table-column label="area type" align="center" prop="businessArea">
@@ -65,11 +65,11 @@
 
     <!-- 添加或修改location对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="locationRef" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="locationRef" :model="form" :rules="rules" label-width="90px">
         <el-form-item label="name" prop="name">
           <el-input v-model="form.name" placeholder="请输入name" />
         </el-form-item>
-        <el-form-item label="area type" prop="businessArea">
+        <el-form-item label="area type"  prop="businessArea">
           <el-select v-model="form.businessArea" placeholder="请选择area_type">
             <el-option v-for="dict in business_type" :key="dict.value" :label="dict.label"
               :value="parseInt(dict.value)"></el-option>

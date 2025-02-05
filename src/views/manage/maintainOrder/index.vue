@@ -84,7 +84,6 @@
             @change="() => { form.userId = ''; handleVmInnerCodeChange(); }">
             <el-option v-for="item in vmList" :key="item.id" :label="item.innerCode" :value="item.innerCode"
               @click="form.regionId = item.regionId"></el-option>
-            <span v-if="!form.vmInnerCode" style="color: red;">VM Inner Code is undefined</span>
           </el-select>
         </el-form-item>
 
