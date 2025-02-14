@@ -102,6 +102,7 @@ function handleLogin() {
           }
           return acc;
         }, {});
+        //NOTE:For instance, //http://localhost:81/login?redirect=/index => //http://localhost:81/index
         router.push({ path: redirect.value || "/", query: otherQueryParams });
       }).catch(() => {
         loading.value = false;
