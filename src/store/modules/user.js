@@ -17,7 +17,7 @@ const useUserStore = defineStore("user", {
       const username = userInfo.username.trim();
       const password = userInfo.password;
       const code = userInfo.code;
-      const uuid = userInfo.uuid;
+      const uuid = userInfo.uuid;//NOTE? what is uuid here for ?
       return new Promise((resolve, reject) => {
         login(username, password, code, uuid)
           .then((res) => {
@@ -43,8 +43,8 @@ const useUserStore = defineStore("user", {
 
             if (res.roles && res.roles.length > 0) {
               // 验证返回的roles是否是一个非空数组
-              this.roles = res.roles;
-              this.permissions = res.permissions;
+              this.roles = res.roles; // user role collection
+              this.permissions = res.permissions;// user permission collection
             } else {
               this.roles = ["ROLE_DEFAULT"];
             }

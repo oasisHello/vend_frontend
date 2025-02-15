@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">ENTRANCE</h3>
+      <h3 class="title">Entrance</h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" type="text" size="large" auto-complete="off" placeholder="账号">
           <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
@@ -22,11 +22,12 @@
           <img :src="codeUrl" @click="getCode" class="login-code-img" />
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
+      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">remember me</el-checkbox>
       <el-form-item style="width:100%;">
-        <el-button :loading="loading" size="large" type="primary" style="width:100%;" @click.prevent="handleLogin">
-          <span v-if="!loading">登 录</span>
-          <span v-else>登 录 中...</span>
+        <!--NOTE: click.prevent:prevent the defafault action(form submit)-->
+        <el-button :loading="loading" size="medium" type="primary" style="width:100%;" @click.prevent="handleLogin">
+          <span v-if="!loading">login</span>
+          <span v-else>logining</span>
         </el-button>
         <div style="float: right;" v-if="register">
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
@@ -101,6 +102,7 @@ function handleLogin() {
           }
           return acc;
         }, {});
+        //NOTE:For instance, //http://localhost:81/login?redirect=/index => //http://localhost:81/index
         router.push({ path: redirect.value || "/", query: otherQueryParams });
       }).catch(() => {
         loading.value = false;
@@ -153,8 +155,8 @@ getCookie();
   text-align: center;
   color: #FF7043;
   /* Deep teal for contrast */
-  font-family: 'Arial', sans-serif;
-  /* Sets the font type */
+  font-family: 'Monospace', monospace;
+  /* Sets the font type to Consolas */
   font-size: 2rem;
   /* Sets the font size */
   font-weight: bold;
